@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.Util;
 
-enum Alliance {
+public enum Alliance {
 
     BLUE,
     RED,
-    OTHER
+    REMOTE_AUTO,
+    REMOTE_TELEOP,
+    OTHER //(TELEOP)
 }
