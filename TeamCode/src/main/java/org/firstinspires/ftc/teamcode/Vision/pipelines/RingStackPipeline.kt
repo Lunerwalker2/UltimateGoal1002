@@ -15,20 +15,21 @@ class RingStackPipeline(): OpenCvPipeline() {
 
     companion object {
         //Dimensions for the sample region at the top of the stack
-        var topRingRegionX: Int = 200
-        var topRingRegionY: Int = 200
+        var topRingRegionXValue: Double = 0.4
+        var topRingRegionYValue: Double = 0.5
         //Maybe make var??
         val topRingRegionWidth: Int = 40
         val topRingRegionHeight: Int = 70
 
         //Dimensions for the sample region at the bottom of the stack
-        var bottomRingRegionX: Int = 200
-        var bottomRingRegionY: Int = 300
+        var bottomRingRegionXValue: Double = 0.4
+        var bottomRingRegionYValue: Double = 0.6
+
         val bottomRingRegionWidth: Int = 40
         val bottomRingRegionHeight: Int = 70
 
         //If the mean value of the cb mat is below this, a ring is detected
-        var thresholdValue: Int = 100
+        var thresholdValue: Int = 110
 
 
     }
@@ -60,19 +61,27 @@ class RingStackPipeline(): OpenCvPipeline() {
      */
     override fun processFrame(input: Mat): Mat {
 
-        //Copy the original frame to one we can alter
-        input.copyTo(yCbCrMat)
 
 
         //Convert the input mat from RGB to YCbCr
-        Imgproc.cvtColor(yCbCrMat, yCbCrMat, Imgproc.COLOR_RGB2YCrCb)
+        Imgproc.cvtColor(input, yCbCrMat, Imgproc.COLOR_RGB2YCrCb)
 
         //Extract the Cb channel
         Core.extractChannel(yCbCrMat, cBmat, 2)
 
         //Make the sample rectangles
-        val topSampleRect = Rect(topRingRegionX, topRingRegionY, topRingRegionWidth, topRingRegionHeight)
-        val bottomSampleRect = Rect(bottomRingRegionX, bottomRingRegionY, bottomRingRegionWidth, bottomRingRegionHeight)
+        val topSampleRect = Rect(
+                (topRingRegionXValue * input.width()).toInt(),
+                (topRingRegionYValue * input.height()).toInt(),
+                topRingRegionWidth,
+                topRingRegionHeight
+        )
+        val bottomSampleRect = Rect(
+                (bottomRingRegionXValue * input.width()).toInt(),
+                (bottomRingRegionYValue * input.height()).toInt(),
+                bottomRingRegionWidth,
+                bottomRingRegionHeight
+        )
 
         //Submat the Cb Channel into the sample regions
         val topSampleRegion = cBmat.submat(topSampleRect)
