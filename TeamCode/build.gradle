@@ -26,5 +26,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation 'org.openftc:easyopencv:1.4.1'
-    implementation 'com.arcrobotics:ftclib:1.0.0'
+    implementation 'com.arcrobotics:ftclib:1.1.0'
+    implementation 'org.openftc:rev-extensions-2:1.2'
 }

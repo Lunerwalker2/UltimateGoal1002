@@ -28,8 +28,8 @@ public class HardwareNames {
     }
 
     public static class Hubs {
-        public static final String HUB_10 = "Expansion Hub 10";
-        public static final String HUB_1 = "Expansion Hub 1";
+        public static final String HUB_LEFT = "Expansion Hub 10";
+        public static final String HUB_RIGHT = "Expansion Hub 1";
     }
 
 

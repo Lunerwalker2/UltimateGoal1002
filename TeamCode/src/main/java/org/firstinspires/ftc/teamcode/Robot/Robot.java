@@ -27,6 +27,8 @@ public class Robot {
     //Robot Components
     public DriveBase driveBase;
 
+    public BulkData bulkData;
+
 
     //Road Runner Component
 
@@ -65,6 +67,7 @@ public class Robot {
 
         //Drive Base
         driveBase = new DriveBase(this);
+        bulkData = new BulkData(this);
 
 
         //Since we use odometry in both auto and teleop in this game, there is no need to tell the
@@ -81,6 +84,7 @@ public class Robot {
     //Called every loop to update the robot's components
     public void update(){
         //Update the bulk data cache before any other hardware updates
+        bulkData.update();
 
 
         //Update the odometry
