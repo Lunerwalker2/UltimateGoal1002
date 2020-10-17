@@ -19,7 +19,7 @@ class OdometryKt(val hardwareMap: HardwareMap):
     companion object {
         private val design = DesignCharacteristics(14.5138, 3.55598425197)
 
-        private val odometers = OdometerCharacteristics(1440.0, 1.41732283465, 1.0)
+        private val odometers = OdometerCharacteristics(8192.0, 2.0, 1.0)
 
 
         fun ticksToInches(ticks: Int): Double {
@@ -31,6 +31,10 @@ class OdometryKt(val hardwareMap: HardwareMap):
     private val right_y_encoder = Encoder(hardwareMap.get(DcMotorEx::class.java, HardwareNames.Odometry.RIGHT_Y_ENCODER))
     private val x_encoder = Encoder(hardwareMap.get(DcMotorEx::class.java, HardwareNames.Odometry.X_ENCODER))
 
+
+    private val X_MULTIPLIER = 1;
+    private val Y_MULTIPLIER = 1;
+
     init {
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
@@ -41,9 +45,9 @@ class OdometryKt(val hardwareMap: HardwareMap):
     @NonNull
     override fun getWheelPositions(): List<Double> {
          return listOf(
-                ticksToInches(left_y_encoder.currentPosition),
-                ticksToInches(right_y_encoder.currentPosition),
-                ticksToInches(x_encoder.currentPosition) //returns in radians
+                ticksToInches(left_y_encoder.currentPosition * X_MULTIPLIER),
+                ticksToInches(right_y_encoder.currentPosition * X_MULTIPLIER),
+                ticksToInches(x_encoder.currentPosition * Y_MULTIPLIER) //returns in radians
         )
     }
 

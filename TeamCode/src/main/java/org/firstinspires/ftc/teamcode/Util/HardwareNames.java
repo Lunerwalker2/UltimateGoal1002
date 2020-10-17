@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Util;
 
 /**
- * This class holds all the hardware names for devices. <i>Try</i> to keep it in this class
+ * This class holds all the hardware names for devices. Try to keep it in this class
  * in order to keep all the names the same
  *
  */
@@ -21,10 +21,18 @@ public class HardwareNames {
         public static final String X_ENCODER = "x_encoder";
     }
 
-    // TODO: Change this accordingly
     public static class Sensors {
         public static final String LEFT_HUB_IMU = "imu";
         public static final String RIGHT_HUB_IMU = "imu 1";
+    }
+
+    public static class Shooter {
+        public static final String SHOOTER_MOTOR_1 = "shooter motor 1";
+        public static final String SHOOTER_MOTOR_2 = "shooter motor 2";
+
+        public static final String SHOOTER_ENCODER = SHOOTER_MOTOR_2;
+
+        public static final String SHOOTER_ANGLE_SERVO = "shooter angle servo";
     }
 
     public static class Hubs {
