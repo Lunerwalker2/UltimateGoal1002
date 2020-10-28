@@ -55,7 +55,7 @@ class Shooter(robot: Robot): Component(robot) {
     private var angleMode: AngleMode = AngleMode.MANUAL
 
 
-    //Boolean to tell when the flywheel should be on
+    //Boolean to tell when the flywheel should be om
     private var flywheelOn: Boolean = false
 
     //The PIDF controller for the flywheel velocity
@@ -67,8 +67,8 @@ class Shooter(robot: Robot): Component(robot) {
 
     We might need some logic that allows the motors to cut power with a toggle control from the
     driver.
-     */
 
+     */
 
     private val flywheelVeloController = PIDFController(flywheelVeloCoefficients, flywheelVelocitykV)
 
