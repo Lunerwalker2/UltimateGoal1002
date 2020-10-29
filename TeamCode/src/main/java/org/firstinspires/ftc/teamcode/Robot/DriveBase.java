@@ -39,6 +39,8 @@ public class DriveBase extends Component {
 
         motors.forEach((motor) -> motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER));
 
+        setMaxRPMFraction(1.0);
+
     }
 
     private DcMotorEx findMotor(String name){
@@ -75,7 +77,7 @@ public class DriveBase extends Component {
      * @param coefficients The PIDF coefficients
      * @param runMode The mode to set them as (usually RUN_USING_ENCODER)
      */
-    public void setPIDCoefficients(PIDFCoefficients coefficients, DcMotorEx.RunMode runMode){
+    public void setPIDFCoefficients(PIDFCoefficients coefficients, DcMotorEx.RunMode runMode){
         motors.forEach((motor) -> motor.setPIDFCoefficients(runMode, coefficients));
     }
 
@@ -106,12 +108,12 @@ public class DriveBase extends Component {
     //RR uses a different order than us, so the following methods are specific to that
 
 
-    public List<Integer> getWheelEncoderPositionsRR(){
+    public List<Double> getWheelEncoderPositionsRR(){
         return Arrays.asList(
-                left_front_drive.getCurrentPosition(),
-                left_back_drive.getCurrentPosition(),
-                right_back_drive.getCurrentPosition(),
-                right_front_drive.getCurrentPosition()
+                (double) left_front_drive.getCurrentPosition(),
+                (double) left_back_drive.getCurrentPosition(),
+                (double) right_back_drive.getCurrentPosition(),
+                (double) right_front_drive.getCurrentPosition()
 
         );
     }

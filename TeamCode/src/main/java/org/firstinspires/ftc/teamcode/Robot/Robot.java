@@ -33,7 +33,7 @@ public class Robot {
     //Road Runner Component
 
     //FTC Dashboard
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
+    public FtcDashboard dashboard = FtcDashboard.getInstance();
 
     //Timer for the loop time
     private  ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -116,6 +116,8 @@ public class Robot {
         opMode.telemetry.addData("Movement Turn", "%.2f", movement_turn);
 
         opMode.telemetry.update();
+
+        dashboard.sendTelemetryPacket(packet);
     }
 
 

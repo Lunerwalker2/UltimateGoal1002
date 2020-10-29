@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import kotlin.math.abs
 
 object DriveFields {
     @JvmField
@@ -11,11 +12,11 @@ object DriveFields {
     var movement_turn = 0.0
 
 
-    const val VX_WEIGHT = 0.8
-    const val VY_WEIGHT = 0.8
-    const val OMEGA_WEIGHT = 0.8
+    const val VX_WEIGHT = 1.0
+    const val VY_WEIGHT = 1.0
+    const val OMEGA_WEIGHT = 1.0
 
-    const val lateralMultiplier = 1.1
+    const val lateralMultiplier = 1.0
 
     @JvmField
     var lf_power = 0.0
@@ -46,9 +47,9 @@ object DriveFields {
     fun normalizedVels(): Pose2d {
         val baseVel = Pose2d(-movement_y, -movement_x, -movement_turn) //LEAVE as is
         val vel: Pose2d
-        vel = if (Math.abs(baseVel.x) + Math.abs(baseVel.y) + Math.abs(baseVel.heading) > 1) {
+        vel = if (abs(baseVel.x) + abs(baseVel.y) + abs(baseVel.heading) > 1) {
             // re-normalize the powers according to the weights
-            val denom = VX_WEIGHT * Math.abs(baseVel.x) + VY_WEIGHT * Math.abs(baseVel.y) + OMEGA_WEIGHT * Math.abs(baseVel.heading)
+            val denom = VX_WEIGHT * abs(baseVel.x) + VY_WEIGHT * abs(baseVel.y) + OMEGA_WEIGHT * abs(baseVel.heading)
             Pose2d(
                     VX_WEIGHT * baseVel.x,
                     VY_WEIGHT * baseVel.y,
