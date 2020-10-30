@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Robot.RoadRunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Util.Alliance;
 
 import static org.firstinspires.ftc.teamcode.Robot.DriveFields.movement_turn;
@@ -28,6 +29,8 @@ public class Robot {
     public DriveBase driveBase;
 
     public BulkData bulkData;
+
+    public SampleMecanumDrive roadRunnerBase;
 
 
     //Road Runner Component
@@ -65,9 +68,12 @@ public class Robot {
 
         //Initialize components
 
-        //Drive Base
         driveBase = new DriveBase(this);
         bulkData = new BulkData(this);
+
+
+        //Initialize RR
+        roadRunnerBase = new SampleMecanumDrive(this);
 
 
         //Since we use odometry in both auto and teleop in this game, there is no need to tell the
@@ -90,13 +96,15 @@ public class Robot {
         //Update the odometry
 
 
-        //TODO: MAKE SURE THIS ACTUALLY DOES NOTHING IN TELEOP
-        //Update RoadRunner. If roadrunner isn't being used then it does nothing
+
+        if(alliance.isAuto){
+            roadRunnerBase.update();
+        }
 
         //Update drive motors
 
         //If it's teleop, update using the x, y, and turn components
-        if ((alliance == Alliance.OTHER) || (alliance == Alliance.REMOTE_TELEOP)) {
+        if (!alliance.isAuto) {
             driveBase.updateHolonomic();
         } else { //Otherwise assume the powers have already been updated by roadrunner
             driveBase.updatePowers();
