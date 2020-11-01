@@ -3,17 +3,29 @@ package org.firstinspires.ftc.teamcode.Robot;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Robot.RoadRunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Util.Alliance;
+
+import java.io.File;
+import java.io.IOException;
+
+import static java.lang.Math.toRadians;
+import static java.lang.Double.parseDouble;
 
 import static org.firstinspires.ftc.teamcode.Robot.DriveFields.movement_turn;
 import static org.firstinspires.ftc.teamcode.Robot.DriveFields.movement_x;
 import static org.firstinspires.ftc.teamcode.Robot.DriveFields.movement_y;
+
+import static org.firstinspires.ftc.teamcode.Robot.Odometry.world_x;
+import static org.firstinspires.ftc.teamcode.Robot.Odometry.world_y;
+import static org.firstinspires.ftc.teamcode.Robot.Odometry.world_r;
 
 
 /*
@@ -30,6 +42,8 @@ public class Robot {
 
     public BulkData bulkData;
 
+    public Odometry odometry;
+
     public SampleMecanumDrive roadRunnerBase;
 
 
@@ -39,21 +53,23 @@ public class Robot {
     public FtcDashboard dashboard = FtcDashboard.getInstance();
 
     //Timer for the loop time
-    private  ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     //The starting positions for the robot.
     //TRADITIONAL ONLY
-    private static final Pose2d redStartingPosition = new Pose2d(0, 0, Rotation2d.fromDegrees(90));
-
-    private static final Pose2d blueStartingPosition = new Pose2d(0, 0, Rotation2d.fromDegrees(-90));
+    private static Pose2d redTraditionalStartingPosition = new Pose2d(0, 0, toRadians(90));
+    private static Pose2d blueTraditionalStartingPosition = new Pose2d(0, 0, toRadians(-90));
 
     //TODO: Decide on how to implement a coordinate system to the remote field.
 
     //REMOTE ONLY- to be changed
-    private static final Pose2d remoteStartingPosition = new Pose2d(0, 0, Rotation2d.fromDegrees(-90));
+    private static Pose2d redRemoteStartingPosition = new Pose2d(0, 0, toRadians(-90));
+    private static Pose2d blueRemoteStartingPosition = new Pose2d(0, 0, toRadians(-90));
 
-    //To be used mostly in teleop - maybe use for remote??????????
-    public static Pose2d userStartingPosition = new Pose2d(0,0, new Rotation2d(0));
+
+    //To be used mostly in teleop - this pose needs to be saved from end of auto
+    public static Pose2d userStartingPosition = null;
+
 
     //The dashboard telemetry packet
     public TelemetryPacket packet = new TelemetryPacket();
@@ -61,8 +77,16 @@ public class Robot {
     //The current Alliance...... may need to change for remote
     public Alliance alliance;
 
+    //Use this in a teleop run where odometry tracking doesn't matter (i.e. testing)
 
-    public Robot(OpMode opMode, Alliance alliance){
+    //IMPORTANT:If a position is NOT given in the constructor, the starting position will
+    //be read from a file that indicates the last known position of the robot at the last run of auto.
+
+    public Robot(OpMode opMode, Alliance alliance) {
+        this(opMode, alliance, readLastKnownPosition());
+    }
+
+    public Robot(OpMode opMode, Alliance alliance, Pose2d startingPosition) {
         this.opMode = opMode;
         this.alliance = alliance;
 
@@ -70,6 +94,16 @@ public class Robot {
 
         driveBase = new DriveBase(this);
         bulkData = new BulkData(this);
+
+        if (alliance.isAuto) {
+            if (alliance.isRemote) {
+                odometry = alliance == Alliance.RED ? new Odometry(this, redRemoteStartingPosition) : new Odometry(this, blueRemoteStartingPosition);
+            } else {
+                odometry = alliance == Alliance.RED ? new Odometry(this, redTraditionalStartingPosition) : new Odometry(this, blueTraditionalStartingPosition);
+            }
+        } else {
+            odometry = new Odometry(this, startingPosition);
+        }
 
 
         //Initialize RR
@@ -87,17 +121,18 @@ public class Robot {
         opMode.telemetry.addData("Loop Time (ms)", "%.2f", () -> timer.milliseconds());
     }
 
+
     //Called every loop to update the robot's components
-    public void update(){
+    public void update() {
         //Update the bulk data cache before any other hardware updates
         bulkData.update();
 
 
         //Update the odometry
+        odometry.update();
 
 
-
-        if(alliance.isAuto){
+        if (alliance.isAuto) {
             roadRunnerBase.update();
         }
 
@@ -117,20 +152,35 @@ public class Robot {
         timer.reset();
     }
 
-    private void compileTelemetry(){
+    private void compileTelemetry() {
 
         opMode.telemetry.addData("Movement X", "%.2f", movement_x);
         opMode.telemetry.addData("Movement Y", "%.2f", movement_y);
         opMode.telemetry.addData("Movement Turn", "%.2f", movement_turn);
+
+        opMode.telemetry.addData("World X", "%.2f", world_x);
+        opMode.telemetry.addData("World Y", "%.2f", world_y);
+        opMode.telemetry.addData("World Heading", "%.2f", world_r);
 
         opMode.telemetry.update();
 
         dashboard.sendTelemetryPacket(packet);
     }
 
+    //This method writes the contents of a position object to a text file
+    public static void writeLastKnownPosition(Pose2d lastKnownPosition) {
+        File file = AppUtil.getInstance().getSettingsFile("LastKnownAutoPose.txt");
+        String values = lastKnownPosition.getX() + "," + lastKnownPosition.getY() + "," + lastKnownPosition.getHeading();
+        ReadWriteFile.writeFile(file, values);
+    }
 
-
-
+    //This method reads the contents of the text file and returns the position object
+    public static Pose2d readLastKnownPosition() {
+        File file = AppUtil.getInstance().getSettingsFile("LastKnownAutoPose.txt");
+        String contents = ReadWriteFile.readFile(file);
+        String[] values = contents.split(",");
+        return new Pose2d(parseDouble(values[0]), parseDouble(values[1]), parseDouble(values[2]));
+    }
 
 
 }

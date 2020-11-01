@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.teamcode.Util.HardwareNames
 
 
-class OdometryKt(val hardwareMap: HardwareMap):
+class OdometryLocalizer(val hardwareMap: HardwareMap):
         ThreeTrackingWheelLocalizer(listOf(
                 Pose2d(0.0, design.LATERAL_DISTANCE / 2, 0.0),  // left
                 Pose2d(0.0, -design.LATERAL_DISTANCE / 2, 0.0),  // right
