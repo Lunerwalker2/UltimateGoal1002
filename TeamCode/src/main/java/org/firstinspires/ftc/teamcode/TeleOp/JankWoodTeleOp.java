@@ -61,7 +61,7 @@ public class JankWoodTeleOp extends LinearOpMode {
 
 
         while (opModeIsActive()){
-            if (!isStopRequested()) return;
+            if (isStopRequested()) return;
 
             //We use RoadRunner's reverse kinematics for wheel powers
             /* It's some weird voodoo magic that somehow works.
@@ -69,7 +69,7 @@ public class JankWoodTeleOp extends LinearOpMode {
             But it does math for us so we do it :)
              */
 
-            Pose2d roadRunnerVoodooPowers = new Pose2d(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+            Pose2d roadRunnerVoodooPowers = new Pose2d(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             List<Double> drivePowers = getDrivePowers(normalizedVels(roadRunnerVoodooPowers));
 
             lf.setPower(drivePowers.get(0));

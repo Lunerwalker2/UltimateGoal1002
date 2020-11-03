@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Vision.pipelines
 
 
+import com.acmerobotics.dashboard.config.Config
 import org.opencv.core.Core
 import org.opencv.core.Mat
 import org.opencv.core.Rect
@@ -11,25 +12,39 @@ import org.openftc.easyopencv.OpenCvPipeline
 /*
 This class is the pipeline used for detecting the ring stack in auto.
  */
+@Config
 class RingStackPipeline(): OpenCvPipeline() {
 
     companion object {
         //Dimensions for the sample region at the top of the stack
+        @JvmField
         var topRingRegionXValue: Double = 0.4
+        @JvmField
         var topRingRegionYValue: Double = 0.5
         //Maybe make var??
+        @JvmField
         val topRingRegionWidth: Int = 40
+        @JvmField
         val topRingRegionHeight: Int = 70
 
         //Dimensions for the sample region at the bottom of the stack
+        @JvmField
         var bottomRingRegionXValue: Double = 0.4
+        @JvmField
         var bottomRingRegionYValue: Double = 0.6
 
+        @JvmField
         val bottomRingRegionWidth: Int = 40
+        @JvmField
         val bottomRingRegionHeight: Int = 70
 
         //If the mean value of the cb mat is below this, a ring is detected
+        @JvmField
         var thresholdValue: Int = 110
+
+
+        //The will hold the corresponding delivery zone for the ring stack
+        var deliveryZone: DeliveryZone = DeliveryZone.A
 
 
     }
@@ -46,8 +61,6 @@ class RingStackPipeline(): OpenCvPipeline() {
     var cBmat = Mat()
 
 
-    //The will hold the corresponding delivery zone for the ring stack
-    var deliveryZone: DeliveryZone = DeliveryZone.A
 
 
 
