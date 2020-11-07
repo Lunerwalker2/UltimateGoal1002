@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import java.util.ArrayList;
@@ -21,10 +22,18 @@ public class JankWoodTeleOp extends LinearOpMode {
     static final double VY_WEIGHT = 1;
     static final double OMEGA_WEIGHT = 1;
 
+    static final double clawOpen = 0.6;
+    
+    static final double clawClose = 0.1;
+
     DcMotorEx lf;
     DcMotorEx lb;
     DcMotorEx rf;
     DcMotorEx rb;
+
+    DcMotorEx goalArm;
+
+    Servo goalClaw;
 
 
     ArrayList<DcMotorEx> motors = new ArrayList<>();
@@ -38,6 +47,10 @@ public class JankWoodTeleOp extends LinearOpMode {
         lb = hardwareMap.get(DcMotorEx.class, "lb");
         rf = hardwareMap.get(DcMotorEx.class, "rf");
         rb = hardwareMap.get(DcMotorEx.class, "rb");
+
+        goalArm = hardwareMap.get(DcMotorEx.class, "goal arm");
+
+        goalClaw = hardwareMap.get(Servo.class, "goal claw");
 
         motors.add(lf);
         motors.add(lb);
@@ -57,11 +70,27 @@ public class JankWoodTeleOp extends LinearOpMode {
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
+        goalArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        goalArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        goalArm.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
         waitForStart();
+
+        goalClaw.setPosition(clawOpen);
 
 
         while (opModeIsActive()){
             if (isStopRequested()) return;
+
+
+            if(gamepad1.a) goalClaw.setPosition(clawOpen);
+            if(gamepad1.b) goalClaw.setPosition(clawClose);
+
+            if(gamepad1.x) goalArm.setPower(0.4);
+            else if(gamepad1.y) goalArm.setPower(-0.2);
+            else goalArm.setPower(0);
 
             //We use RoadRunner's reverse kinematics for wheel powers
             /* It's some weird voodoo magic that somehow works.
@@ -80,11 +109,11 @@ public class JankWoodTeleOp extends LinearOpMode {
         }
 
         motors.forEach((motor) -> motor.setPower(0));
+        goalArm.setPower(0);
 
 
 
     }
-
 
 
     public static List<Double> getDrivePowers(Pose2d drivePower){

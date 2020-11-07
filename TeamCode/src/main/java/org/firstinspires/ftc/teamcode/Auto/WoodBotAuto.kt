@@ -23,23 +23,21 @@ class WoodBotAuto: LinearOpMode() {
     lateinit var rf: DcMotorEx
     lateinit var rb: DcMotorEx
 
-
     lateinit var imu: BNO055IMU
 
     lateinit var phoneCam: OpenCvCamera
 
-    val visionPipeline = RingStackPipeline()
+    private val visionPipeline = RingStackPipeline()
 
+    private val motors = ArrayList<DcMotorEx>()
 
-    val motors = ArrayList<DcMotorEx>()
+    private val turnCoefficient = 0.05
 
-    val turnCoefficient = 0.05
+    private val forwardPower = 0.7
 
-    val forwardPower = 0.7
+    private val backwardPower = 0.5
 
-    val backwardPower = 0.5
-
-    val timer = ElapsedTime(ElapsedTime.Resolution.SECONDS)
+    private val timer = ElapsedTime(ElapsedTime.Resolution.SECONDS)
 
 
     @Throws(InterruptedException::class)
