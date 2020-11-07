@@ -76,36 +76,43 @@ class WoodBotAuto: LinearOpMode() {
             motor.motorType = motorConfigurationType
         }
 
-        lf.direction = DcMotorSimple.Direction.REVERSE
-        lb.direction = DcMotorSimple.Direction.REVERSE
+        rf.direction = DcMotorSimple.Direction.REVERSE
+        rb.direction = DcMotorSimple.Direction.REVERSE
 
-        phoneCam.openCameraDeviceAsync {
-            phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
-        }
+//        phoneCam.openCameraDeviceAsync {
+//            phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
+//        }
 
-        val deliveryZone = RingStackPipeline.deliveryZone
+//        val deliveryZone = RingStackPipeline.deliveryZone
+        val deliveryZone = RingStackPipeline.DeliveryZone.A
 
         waitForStart()
 
 
         forwardForTime(1500)
+        sleep(500)
 
         when(deliveryZone){
 
             RingStackPipeline.DeliveryZone.A -> {
-                forwardForTime(2000)
+                forwardForTime(1000)
+                sleep(750)
                 backwardForTime(1500)
             }
 
             RingStackPipeline.DeliveryZone.B -> {
                 turnToAngle(20.0)
-                forwardForTime(2000)
+                sleep(500)
+                forwardForTime(1000)
+                sleep(500)
                 backwardForTime(2000)
             }
 
             RingStackPipeline.DeliveryZone.C -> {
                 turnToAngle(25.0)
-                forwardForTime(1500)
+                sleep(500)
+                forwardForTime(900)
+                sleep(500)
                 backwardForTime(1500)
             }
 
@@ -121,19 +128,19 @@ class WoodBotAuto: LinearOpMode() {
     }
 
     private fun forwardForTime(ms: Long){
-        lf.power = forwardPower
-        lb.power = forwardPower
-        rf.power = forwardPower
-        rb.power = forwardPower
+        lf.power = -forwardPower
+        lb.power = -forwardPower
+        rf.power = -forwardPower
+        rb.power = -forwardPower
         sleep(ms)
         stopDrive()
     }
 
     private fun backwardForTime(ms: Long){
-        lf.power = backwardPower
-        lb.power = backwardPower
-        rf.power = backwardPower
-        rb.power = backwardPower
+        lf.power = -backwardPower
+        lb.power = -backwardPower
+        rf.power = -backwardPower
+        rb.power = -backwardPower
         sleep(ms)
         stopDrive()
     }
@@ -143,8 +150,8 @@ class WoodBotAuto: LinearOpMode() {
         var error: Double
         while(timer.seconds() < 3.0){
             error = targetAngle - imu.angularOrientation.firstAngle
-            rf.power = error * turnCoefficient
-            rb.power = error * turnCoefficient
+            rf.power = -error * turnCoefficient
+            rb.power = -error * turnCoefficient
         }
         stopDrive()
 

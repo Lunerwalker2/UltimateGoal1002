@@ -22,9 +22,11 @@ public class JankWoodTeleOp extends LinearOpMode {
     static final double VY_WEIGHT = 1;
     static final double OMEGA_WEIGHT = 1;
 
-    static final double clawOpen = 0.6;
-    
-    static final double clawClose = 0.1;
+    static final double goalClawOpen = 0.8;
+    static final double goalClawClose = 0.4;
+
+    static final double ringClawOpen = 0.0;
+    static final double ringClawClose = 0.6;
 
     DcMotorEx lf;
     DcMotorEx lb;
@@ -32,8 +34,10 @@ public class JankWoodTeleOp extends LinearOpMode {
     DcMotorEx rb;
 
     DcMotorEx goalArm;
+    DcMotorEx ringArm;
 
     Servo goalClaw;
+    Servo ringClaw;
 
 
     ArrayList<DcMotorEx> motors = new ArrayList<>();
@@ -49,8 +53,10 @@ public class JankWoodTeleOp extends LinearOpMode {
         rb = hardwareMap.get(DcMotorEx.class, "rb");
 
         goalArm = hardwareMap.get(DcMotorEx.class, "goal arm");
+        ringArm = hardwareMap.get(DcMotorEx.class, "ring arm");
 
         goalClaw = hardwareMap.get(Servo.class, "goal claw");
+        ringClaw = hardwareMap.get(Servo.class, "ring claw");
 
         motors.add(lf);
         motors.add(lb);
@@ -74,19 +80,29 @@ public class JankWoodTeleOp extends LinearOpMode {
         goalArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         goalArm.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        ringArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ringArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         waitForStart();
 
-        goalClaw.setPosition(clawOpen);
+        goalClaw.setPosition(goalClawOpen);
+        ringClaw.setPosition(ringClawOpen);
 
 
         while (opModeIsActive()){
             if (isStopRequested()) return;
 
 
-            if(gamepad1.a) goalClaw.setPosition(clawOpen);
-            if(gamepad1.b) goalClaw.setPosition(clawClose);
+            if(gamepad1.a) goalClaw.setPosition(goalClawOpen);
+            if(gamepad1.b) goalClaw.setPosition(goalClawClose);
+
+            if(gamepad1.left_bumper) ringClaw.setPosition(ringClawOpen);
+            if(gamepad1.right_bumper) ringClaw.setPosition(ringClawClose);
+
+            if(gamepad1.left_trigger >= 0.2) ringArm.setPower(0.7);
+            else if(gamepad1.right_trigger >= 0.2) ringArm.setPower(-0.7);
+            else ringArm.setPower(0);
 
             if(gamepad1.x) goalArm.setPower(0.4);
             else if(gamepad1.y) goalArm.setPower(-0.2);
