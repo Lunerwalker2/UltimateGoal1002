@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 
@@ -39,6 +40,7 @@ public class JankWoodTeleOp extends LinearOpMode {
     Servo goalClaw;
     Servo ringClaw;
 
+    private double slowModeMult = 0.7;
 
     ArrayList<DcMotorEx> motors = new ArrayList<>();
 
@@ -94,18 +96,18 @@ public class JankWoodTeleOp extends LinearOpMode {
             if (isStopRequested()) return;
 
 
-            if(gamepad1.a) goalClaw.setPosition(goalClawOpen);
-            if(gamepad1.b) goalClaw.setPosition(goalClawClose);
+            if(gamepad2.a) goalClaw.setPosition(goalClawOpen);
+            if(gamepad2.b) goalClaw.setPosition(goalClawClose);
 
-            if(gamepad1.left_bumper) ringClaw.setPosition(ringClawOpen);
-            if(gamepad1.right_bumper) ringClaw.setPosition(ringClawClose);
+            if(gamepad2.left_bumper) ringClaw.setPosition(ringClawOpen);
+            if(gamepad2.right_bumper) ringClaw.setPosition(ringClawClose);
 
-            if(gamepad1.left_trigger >= 0.2) ringArm.setPower(0.7);
-            else if(gamepad1.right_trigger >= 0.2) ringArm.setPower(-0.7);
+            if(gamepad2.left_trigger >= 0.2) ringArm.setPower(0.8);
+            else if(gamepad2.right_trigger >= 0.2) ringArm.setPower(-0.8);
             else ringArm.setPower(0);
 
-            if(gamepad1.x) goalArm.setPower(0.4);
-            else if(gamepad1.y) goalArm.setPower(-0.2);
+            if(gamepad2.x) goalArm.setPower(0.4);
+            else if(gamepad2.y) goalArm.setPower(-0.2);
             else goalArm.setPower(0);
 
             //We use RoadRunner's reverse kinematics for wheel powers
@@ -117,10 +119,13 @@ public class JankWoodTeleOp extends LinearOpMode {
             Pose2d roadRunnerVoodooPowers = new Pose2d(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             List<Double> drivePowers = getDrivePowers(normalizedVels(roadRunnerVoodooPowers));
 
-            lf.setPower(drivePowers.get(0));
-            lb.setPower(drivePowers.get(1));
-            rf.setPower(drivePowers.get(3));
-            rb.setPower(drivePowers.get(2));
+            slowModeMult = gamepad1.left_bumper ? 0.5 : 1;
+
+
+            lf.setPower(drivePowers.get(0) * slowModeMult);
+            lb.setPower(drivePowers.get(1) * slowModeMult);
+            rf.setPower(drivePowers.get(3) * slowModeMult);
+            rb.setPower(drivePowers.get(2) * slowModeMult);
 
         }
 

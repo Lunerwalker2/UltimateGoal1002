@@ -89,15 +89,15 @@ class WoodBotAuto: LinearOpMode() {
         waitForStart()
 
 
-        forwardForTime(1500)
+        forwardForTime(1000)
         sleep(500)
 
         when(deliveryZone){
 
             RingStackPipeline.DeliveryZone.A -> {
-                forwardForTime(1000)
+                forwardForTime(1200)
                 sleep(750)
-                backwardForTime(1500)
+                backwardForTime(1100)
             }
 
             RingStackPipeline.DeliveryZone.B -> {
@@ -137,10 +137,10 @@ class WoodBotAuto: LinearOpMode() {
     }
 
     private fun backwardForTime(ms: Long){
-        lf.power = -backwardPower
-        lb.power = -backwardPower
-        rf.power = -backwardPower
-        rb.power = -backwardPower
+        lf.power = backwardPower
+        lb.power = backwardPower
+        rf.power = backwardPower
+        rb.power = backwardPower
         sleep(ms)
         stopDrive()
     }

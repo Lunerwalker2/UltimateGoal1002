@@ -18,29 +18,32 @@ class RingStackPipeline(): OpenCvPipeline() {
     companion object {
         //Dimensions for the sample region at the top of the stack
         @JvmField
-        var topRingRegionXValue: Double = 0.4
+        var topRingRegionXValue: Double = 0.27
         @JvmField
-        var topRingRegionYValue: Double = 0.5
+        var topRingRegionYValue: Double = 0.612
         //Maybe make var??
         @JvmField
-        val topRingRegionWidth: Int = 40
+        val topRingRegionWidth: Int = 20
         @JvmField
-        val topRingRegionHeight: Int = 70
+        val topRingRegionHeight: Int = 10
 
         //Dimensions for the sample region at the bottom of the stack
         @JvmField
-        var bottomRingRegionXValue: Double = 0.4
+        var bottomRingRegionXValue: Double = 0.25
         @JvmField
-        var bottomRingRegionYValue: Double = 0.6
+        var bottomRingRegionYValue: Double = 0.675
 
         @JvmField
-        val bottomRingRegionWidth: Int = 40
+        val bottomRingRegionWidth: Int = 20
         @JvmField
-        val bottomRingRegionHeight: Int = 70
+        val bottomRingRegionHeight: Int = 10
 
         //If the mean value of the cb mat is below this, a ring is detected
         @JvmField
-        var thresholdValue: Int = 110
+        var thresholdValue: Int = 120
+
+        @JvmField
+        var brightnessFact: Double = 1.0
 
 
         //The will hold the corresponding delivery zone for the ring stack
@@ -105,8 +108,8 @@ class RingStackPipeline(): OpenCvPipeline() {
         val bottomRegionMean: Scalar = Core.mean(bottomSampleRegion)
 
         //Compare the means to a threshold value to determine the presence of a ring in that area.
-        val topRingDetected: Boolean = (topRegionMean.`val`[0] < thresholdValue)
-        val bottomRingDetected: Boolean = (bottomRegionMean.`val`[0] < thresholdValue)
+        val topRingDetected: Boolean = (topRegionMean.`val`[0] * brightnessFact < thresholdValue)
+        val bottomRingDetected: Boolean = (bottomRegionMean.`val`[0] * brightnessFact < thresholdValue)
 
 
         /*
