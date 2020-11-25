@@ -42,6 +42,13 @@ public class JankWoodTeleOp extends LinearOpMode {
 
     private double slowModeMult = 0.7;
 
+
+    private boolean ringClawBounce = false;
+    private boolean ringClawChanged = false;
+
+    private boolean goalClawChanged = false;
+    private boolean goalClawBounce = false;
+
     ArrayList<DcMotorEx> motors = new ArrayList<>();
 
 
@@ -95,19 +102,28 @@ public class JankWoodTeleOp extends LinearOpMode {
         while (opModeIsActive()){
             if (isStopRequested()) return;
 
+            if(gamepad2.a && !goalClawBounce){
+                moveGoalClaw();
+                goalClawBounce = true;
+            } else if(!gamepad2.a){
+                goalClawBounce = false;
+            }
 
-            if(gamepad2.a) goalClaw.setPosition(goalClawOpen);
-            if(gamepad2.b) goalClaw.setPosition(goalClawClose);
 
-            if(gamepad2.left_bumper) ringClaw.setPosition(ringClawOpen);
-            if(gamepad2.right_bumper) ringClaw.setPosition(ringClawClose);
+            if(gamepad2.left_bumper && !ringClawBounce){
+                moveRingClaw();
+                ringClawBounce = true;
+            } else if(!gamepad2.left_bumper){
+                ringClawBounce = false;
+            }
 
-            if(gamepad2.left_trigger >= 0.2) ringArm.setPower(0.8);
-            else if(gamepad2.right_trigger >= 0.2) ringArm.setPower(-0.8);
+
+            if(gamepad2.dpad_up) ringArm.setPower(0.8);
+            else if(gamepad2.dpad_down) ringArm.setPower(-0.8);
             else ringArm.setPower(0);
 
-            if(gamepad2.x) goalArm.setPower(0.4);
-            else if(gamepad2.y) goalArm.setPower(-0.2);
+            if(gamepad2.left_trigger >= 0.2) goalArm.setPower(0.4);
+            else if(gamepad2.right_trigger >= 0.2) goalArm.setPower(-0.2);
             else goalArm.setPower(0);
 
             //We use RoadRunner's reverse kinematics for wheel powers
@@ -136,6 +152,25 @@ public class JankWoodTeleOp extends LinearOpMode {
 
     }
 
+    private void moveGoalClaw(){
+        if(!goalClawChanged){
+            goalClaw.setPosition(goalClawOpen);
+            goalClawChanged = true;
+        } else {
+            goalClaw.setPosition(goalClawClose);
+            goalClawChanged = false;
+        }
+    }
+
+    private void moveRingClaw(){
+        if(!ringClawChanged){
+            ringClaw.setPosition(ringClawOpen);
+            ringClawChanged = true;
+        } else {
+            ringClaw.setPosition(ringClawClose);
+            ringClawChanged = false;
+        }
+    }
 
     public static List<Double> getDrivePowers(Pose2d drivePower){
         return MecanumKinematics.robotToWheelVelocities(drivePower,
