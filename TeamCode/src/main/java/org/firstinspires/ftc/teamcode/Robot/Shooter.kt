@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Robot
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.util.InterpLUT
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -10,14 +12,39 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.Util.HardwareNames
+import kotlin.math.atan2
+import kotlin.math.pow
+import kotlin.math.sqrt
 
+
+/*
+Control of the shooter's vertical angle is either manual or automatic.
+
+Manual control will simply not apply any automatic control, and the servo must be given a position
+to go to.
+
+Automatic control will use a look up table to calculate the angle needed to go to a
+position.
+
+The position to aim towards can be set with "shooterTarget". Positions for the high goals
+and powershots are stored in the enum "AllianceTarget".
+
+The flywheel uses a feedforward controller to keep a constant velocity. It can be toggled on and off.
+ */
 @Config
 class Shooter(robot: Robot): Component(robot) {
 
 
+    //Control schemes of the shooter's vertical angle
     enum class AngleMode {
         MANUAL,
         AUTO
+    }
+
+    //Enum to represent the position of the high goal and powershots per side
+    enum class AllianceTarget(val highGoal: Vector2d, val leftPowershot: Vector2d, val centerPowershot: Vector2d, val rightPowershot: Vector2d) {
+        RED(Vector2d(1.0, 1.0), Vector2d(1.0, 1.0), Vector2d(1.0, 1.0), Vector2d(1.0, 1.0)),
+        BLUE(Vector2d(1.0, 1.0), Vector2d(1.0, 1.0), Vector2d(1.0, 1.0), Vector2d(1.0, 1.0));
     }
 
     companion object{
@@ -29,12 +56,31 @@ class Shooter(robot: Robot): Component(robot) {
 
         //The target velocity for the flywheel when it is on. In terms of ticks per rev of the encoder
         private val flywheelTargetVelocity = 100000.0; //TODO: Find this
+
+
+        //Returns angle to a target in radians from the x-axis
+        fun angleToTarget(current: Pose2d, target: Pose2d): Double{
+            var a: Double = atan2(target.y - current.y, target.x - current.x)
+            a += current.heading
+            if(a > Math.PI) a -= 2*Math.PI
+            if(a < -Math.PI) a += 2*Math.PI
+            return a
+        }
+
+        fun distanceBetweenPoints(point1: Pose2d, point2: Pose2d): Double {
+            return sqrt((point2.y - point1.y).pow(2) / (point2.x - point1.x).pow(2))
+        }
+
+        fun distanceBetweenPoints(point1: Vector2d, point2: Vector2d): Double = distanceBetweenPoints(
+                Pose2d(point1.x, point1.y, 0.0),
+                Pose2d(point2.x, point2.y, 0.0)
+        )
     }
 
 
     //The two mechanically linked motors
-    val shooterMotor1: DcMotorSimple
-    val shooterMotor2: DcMotorSimple
+    private val shooterMotor1: DcMotorSimple
+    private val shooterMotor2: DcMotorSimple
 
     //The encoder is actually on motor 2, but we treat it as separate
     val shooterWheelEncoder: DcMotorEx
@@ -43,15 +89,20 @@ class Shooter(robot: Robot): Component(robot) {
     val shooterAngleServo: Servo
 
 
+
     //The lowest the shooter can go in degrees
     val minumumShooterAngle: Double = 25.0
 
     //The highest the shooter can go in degrees
     val maximumShooterAngle: Double = 60.0
 
-    //The current distance for the shooter to angle for
-    private var shooterTargetDistance: Double = 0.0
 
+
+    //The current target position for the shooter to angle for
+    private var shooterTarget: Vector2d = AllianceTarget.BLUE.highGoal;
+
+
+    //var to store the control scheme of the shooter
     private var angleMode: AngleMode = AngleMode.MANUAL
 
 
@@ -111,9 +162,10 @@ class Shooter(robot: Robot): Component(robot) {
             shooterMotor2.power = flywheelMotorOutput
         }
 
+        val shooterTargetDistance: Double = distanceBetweenPoints(Odometry.world_pose, Pose2d(shooterTarget.x, shooterTarget.y, 0.0))
 
         if(angleMode == AngleMode.AUTO){
-
+            setShooterToAngle(shooterAngleLUT.get(shooterTargetDistance))
         }
 
 
@@ -131,6 +183,13 @@ class Shooter(robot: Robot): Component(robot) {
     fun setToAutoAngle(){
         angleMode = AngleMode.AUTO
     }
+
+
+    //Sets the auto-aim position for the shooter
+    fun setTargetPosition(target: Vector2d){
+        shooterTarget = target
+    }
+
 
     fun changeShooterAngleBy(change: Double){
         if(angleMode == AngleMode.MANUAL) {

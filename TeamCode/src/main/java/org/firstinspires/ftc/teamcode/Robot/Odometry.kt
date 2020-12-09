@@ -17,6 +17,9 @@ class Odometry(robot: Robot, startingPose: Pose2d): Component(robot) {
 
         @JvmField
         var world_r: Double = 0.0
+
+        @JvmField
+        var world_pose: Pose2d = Pose2d(world_x, world_y, world_r)
     }
 
 

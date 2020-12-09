@@ -46,6 +46,8 @@ public class Robot {
 
     public SampleMecanumDrive roadRunnerBase;
 
+    public Shooter shooter;
+
 
     //Road Runner Component
 
@@ -94,6 +96,7 @@ public class Robot {
 
         driveBase = new DriveBase(this);
         bulkData = new BulkData(this);
+        shooter = new Shooter(this);
 
         if (alliance.isAuto) {
             if (alliance.isRemote) {
