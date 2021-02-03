@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.DriveFields
 import org.firstinspires.ftc.teamcode.Robot.Odometry
 import org.firstinspires.ftc.teamcode.Robot.Robot
 import org.firstinspires.ftc.teamcode.Robot.Shooter
+import org.firstinspires.ftc.teamcode.Util.Toggle
 
 @TeleOp(name = "Main TeleOp")
 @Config
@@ -52,6 +53,17 @@ class MainTeleOp : LinearOpMode() {
     private lateinit var robot: Robot
 
 
+    //Toggles for various controls
+
+    private lateinit var aimModeToggle: Toggle
+
+    private lateinit var flywheelToggle: Toggle
+
+
+    private var slowModeMult: Double = 1.0
+
+
+
     /**
      * Let's keep a list of the current robot controls here:
      *
@@ -59,6 +71,8 @@ class MainTeleOp : LinearOpMode() {
      * left stick x = robot translational
      * left stick y = robot translational
      * right stick x = robot rotational
+     * left bumper = slow mode
+     * right bumper = aim mode toggle (Manual or auto)
      *
      *
      *
@@ -77,6 +91,13 @@ class MainTeleOp : LinearOpMode() {
         autoAimController.setOutputBounds(-1.0, 1.0)
         autoAimController.setInputBounds(-Math.PI, Math.PI) //Limits of Euler angles
 
+        aimModeToggle = Toggle({aimMode = AimMode.AUTO}, {aimMode = AimMode.MANUAL}, {gamepad1.right_bumper})
+
+        flywheelToggle = Toggle(
+                {robot.shooter.turnOnFlywheel(true)},
+                {robot.shooter.turnOnFlywheel(false)},
+                {gamepad2.left_bumper}
+        )
 
         waitForStart()
 
@@ -86,17 +107,23 @@ class MainTeleOp : LinearOpMode() {
 
 
 
+            slowModeMult = if(gamepad1.left_bumper) 0.5
+            else 1.0
+
+            aimModeToggle.update()
+
+            flywheelToggle.update()
 
             //Give the translation controls of the robot
-            DriveFields.movement_x = gamepad1.left_stick_x.toDouble()
-            DriveFields.movement_y = gamepad1.left_stick_y.toDouble()
+            DriveFields.movement_x = gamepad1.left_stick_x.toDouble() * slowModeMult
+            DriveFields.movement_y = gamepad1.left_stick_y.toDouble() * slowModeMult
 
 
             //Controls the shooter
             if (aimMode == AimMode.AUTO) {
                 DriveFields.movement_turn = autoAimController.update(Odometry.world_r) //Update the controller with current angle
             } else {
-                DriveFields.movement_turn = gamepad1.right_stick_x.toDouble() //Just pass through normal control
+                DriveFields.movement_turn = gamepad1.right_stick_x.toDouble() * slowModeMult //Just pass through normal control
             }
 
 
