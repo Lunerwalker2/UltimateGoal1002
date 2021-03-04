@@ -62,12 +62,6 @@ public class Robot {
     private static Pose2d redTraditionalStartingPosition = new Pose2d(0, 0, toRadians(90));
     private static Pose2d blueTraditionalStartingPosition = new Pose2d(0, 0, toRadians(-90));
 
-    //TODO: Decide on how to implement a coordinate system to the remote field.
-
-    //REMOTE ONLY- to be changed
-    private static Pose2d redRemoteStartingPosition = new Pose2d(0, 0, toRadians(-90));
-    private static Pose2d blueRemoteStartingPosition = new Pose2d(0, 0, toRadians(-90));
-
 
     //To be used mostly in teleop - this pose needs to be saved from end of auto
     public static Pose2d userStartingPosition = null;
@@ -99,11 +93,8 @@ public class Robot {
         shooter = new Shooter(this);
 
         if (alliance.isAuto) {
-            if (alliance.isRemote) {
-                odometry = alliance == Alliance.RED ? new Odometry(this, redRemoteStartingPosition) : new Odometry(this, blueRemoteStartingPosition);
-            } else {
-                odometry = alliance == Alliance.RED ? new Odometry(this, redTraditionalStartingPosition) : new Odometry(this, blueTraditionalStartingPosition);
-            }
+            odometry = alliance == Alliance.RED ? new Odometry(this,
+                    redTraditionalStartingPosition) : new Odometry(this, blueTraditionalStartingPosition);
         } else {
             odometry = new Odometry(this, startingPosition);
         }
