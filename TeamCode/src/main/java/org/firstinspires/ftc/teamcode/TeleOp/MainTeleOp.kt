@@ -123,7 +123,7 @@ class MainTeleOp : LinearOpMode() {
             if (aimMode == AimMode.AUTO) {
                 DriveFields.movement_turn = autoAimController.update(Odometry.world_r) //Update the controller with current angle
             } else {
-                DriveFields.movement_turn = gamepad1.right_stick_x.toDouble() * slowModeMult //Just pass through normal control
+                DriveFields.movement_turn = -gamepad1.right_stick_x.toDouble() * slowModeMult //Just pass through normal control
             }
 
 

@@ -132,7 +132,7 @@ public class JankWoodTeleOp extends LinearOpMode {
 //            But it does math for us so we do it :)
 //             */
 
-            Pose2d roadRunnerVoodooPowers = new Pose2d(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            Pose2d roadRunnerVoodooPowers = new Pose2d(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
             List<Double> drivePowers = getDrivePowers(normalizedVels(roadRunnerVoodooPowers));
 
             slowModeMult = gamepad1.left_bumper ? 0.5 : 1;
