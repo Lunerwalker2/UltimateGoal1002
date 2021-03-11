@@ -45,17 +45,17 @@ class OdometryLocalizer(val hardwareMap: HardwareMap):
     @NonNull
     override fun getWheelPositions(): List<Double> {
          return listOf(
-                ticksToInches(left_y_encoder.currentPosition * X_MULTIPLIER),
-                ticksToInches(right_y_encoder.currentPosition * X_MULTIPLIER),
-                ticksToInches(x_encoder.currentPosition * Y_MULTIPLIER) //returns in radians
+                ticksToInches(left_y_encoder.currentPosition) * X_MULTIPLIER,
+                ticksToInches(right_y_encoder.currentPosition) * X_MULTIPLIER,
+                ticksToInches(x_encoder.currentPosition) * Y_MULTIPLIER //returns in radians
         )
     }
 
     override fun getWheelVelocities(): List<Double> {
         return listOf(
-                ticksToInches(left_y_encoder.correctedVelocity.toInt()),
-                ticksToInches(right_y_encoder.correctedVelocity.toInt()),
-                ticksToInches(x_encoder.correctedVelocity.toInt())
+                ticksToInches(left_y_encoder.correctedVelocity.toInt()) * X_MULTIPLIER,
+                ticksToInches(right_y_encoder.correctedVelocity.toInt()) * X_MULTIPLIER,
+                ticksToInches(x_encoder.correctedVelocity.toInt()) * Y_MULTIPLIER
         )
     }
 
