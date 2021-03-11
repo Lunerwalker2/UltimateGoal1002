@@ -22,7 +22,7 @@ apply plugin: 'com.android.application'
 android {
 
     compileSdkVersion 28
-    ndkVersion "21.3.6528147"
+    ndkVersion "21.4.7075529"
     lintOptions {
         abortOnError false
     }
@@ -121,7 +121,7 @@ android {
         jni.srcDirs = []
         jniLibs.srcDir rootProject.file('libs')
     }
-    ndkVersion '21.3.6528147'
+    ndkVersion '21.4.7075529'
 }
 
 repositories {
