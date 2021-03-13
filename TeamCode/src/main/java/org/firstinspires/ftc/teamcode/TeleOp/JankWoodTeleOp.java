@@ -34,6 +34,10 @@ public class JankWoodTeleOp extends LinearOpMode {
     DcMotorEx rf;
     DcMotorEx rb;
 
+    DcMotorEx left_y_encoder;
+    DcMotorEx right_y_encoder;
+    DcMotorEx x_encoder;
+
 //    DcMotorEx goalArm;
 //    DcMotorEx ringArm;
 //
@@ -60,6 +64,10 @@ public class JankWoodTeleOp extends LinearOpMode {
         lb = hardwareMap.get(DcMotorEx.class, "lb");
         rf = hardwareMap.get(DcMotorEx.class, "rf");
         rb = hardwareMap.get(DcMotorEx.class, "rb");
+
+        left_y_encoder = hardwareMap.get(DcMotorEx.class, "left_y_encoder");
+        right_y_encoder = hardwareMap.get(DcMotorEx.class, "right_y_encoder");
+        x_encoder = hardwareMap.get(DcMotorEx.class, "x_encoder");
 
 //        goalArm = hardwareMap.get(DcMotorEx.class, "goal arm");
 //        ringArm = hardwareMap.get(DcMotorEx.class, "ring arm");
@@ -132,7 +140,7 @@ public class JankWoodTeleOp extends LinearOpMode {
 //            But it does math for us so we do it :)
 //             */
 
-            Pose2d roadRunnerVoodooPowers = new Pose2d(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
+            Pose2d roadRunnerVoodooPowers = new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x);
             List<Double> drivePowers = getDrivePowers(normalizedVels(roadRunnerVoodooPowers));
 
             slowModeMult = gamepad1.left_bumper ? 0.5 : 1;
@@ -142,6 +150,11 @@ public class JankWoodTeleOp extends LinearOpMode {
             lb.setPower(drivePowers.get(1) * slowModeMult);
             rf.setPower(drivePowers.get(3) * slowModeMult);
             rb.setPower(drivePowers.get(2) * slowModeMult);
+
+            telemetry.addData("leftY", left_y_encoder.getCurrentPosition());
+            telemetry.addData("rightY", right_y_encoder.getCurrentPosition());
+            telemetry.addData("center", x_encoder.getCurrentPosition());
+            telemetry.update();
 
         }
 
