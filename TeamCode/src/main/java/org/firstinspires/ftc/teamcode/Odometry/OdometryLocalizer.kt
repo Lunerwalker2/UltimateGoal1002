@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.teamcode.Util.HardwareNames
 
 
@@ -17,7 +16,7 @@ class OdometryLocalizer(val hardwareMap: HardwareMap):
         )) {
 
     companion object {
-        private val design = DesignCharacteristics(14.5138, 3.55598425197)
+        private val design = DesignCharacteristics(14.5138, 4.25) //3.55598425197
 
         private val odometers = OdometerCharacteristics(8192.0, 2.0, 1.0)
 
@@ -39,16 +38,20 @@ class OdometryLocalizer(val hardwareMap: HardwareMap):
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
 
+        // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
+        left_y_encoder.direction = Encoder.Direction.REVERSE
+        right_y_encoder.direction = Encoder.Direction.REVERSE
+
     }
 
 
     @NonNull
     override fun getWheelPositions(): List<Double> {
          return listOf(
-                ticksToInches(left_y_encoder.currentPosition) * X_MULTIPLIER,
-                ticksToInches(right_y_encoder.currentPosition) * X_MULTIPLIER,
-                ticksToInches(x_encoder.currentPosition) * Y_MULTIPLIER //returns in radians
-        )
+                 ticksToInches(left_y_encoder.currentPosition) * X_MULTIPLIER,
+                 ticksToInches(right_y_encoder.currentPosition) * X_MULTIPLIER,
+                 ticksToInches(x_encoder.currentPosition) * Y_MULTIPLIER //returns in radians
+         )
     }
 
     override fun getWheelVelocities(): List<Double> {

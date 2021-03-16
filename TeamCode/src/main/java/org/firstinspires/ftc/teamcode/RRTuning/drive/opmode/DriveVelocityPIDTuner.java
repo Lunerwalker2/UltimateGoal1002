@@ -36,7 +36,7 @@ import static org.firstinspires.ftc.teamcode.RRTuning.drive.DriveConstants.kV;
  * MOTOR_VELO_PID field.
  *
  * Recommended tuning process:
- *
+ *`
  * 1. Increase kP until any phase lag is eliminated. Concurrently increase kD as necessary to
  *    mitigate oscillations.
  * 2. Add kI (or adjust kF) until the steady state/constant velocity plateaus are reached.
@@ -158,7 +158,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                             new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x
+                                    gamepad1.right_stick_x
                             )
                     );
                     break;
