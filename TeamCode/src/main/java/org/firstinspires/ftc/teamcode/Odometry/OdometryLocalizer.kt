@@ -16,9 +16,9 @@ class OdometryLocalizer(val hardwareMap: HardwareMap):
         )) {
 
     companion object {
-        private val design = DesignCharacteristics(14.5138, 4.25) //3.55598425197
+        private val design = DesignCharacteristics(15.0802, 4.25) //3.55598425197
 
-        private val odometers = OdometerCharacteristics(8192.0, 2.0, 1.0)
+        private val odometers = OdometerCharacteristics(8192.0, 1.0, 1.0)
 
 
         fun ticksToInches(ticks: Int): Double {
