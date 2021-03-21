@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Robot.RoadRunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Util.Alliance;
+import org.firstinspires.ftc.teamcode.Util.PoseStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,15 +58,6 @@ public class Robot {
     //Timer for the loop time
     private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-    //The starting positions for the robot.
-    //TRADITIONAL ONLY
-    private static Pose2d redTraditionalStartingPosition = new Pose2d(0, 0, toRadians(90));
-    private static Pose2d blueTraditionalStartingPosition = new Pose2d(0, 0, toRadians(-90));
-
-
-    //To be used mostly in teleop - this pose needs to be saved from end of auto
-    public static Pose2d userStartingPosition = null;
-
 
     //The dashboard telemetry packet
     public TelemetryPacket packet = new TelemetryPacket();
@@ -79,7 +71,7 @@ public class Robot {
     //be read from a file that indicates the last known position of the robot at the last run of auto.
 
     public Robot(OpMode opMode, Alliance alliance) {
-        this(opMode, alliance, readLastKnownPosition());
+        this(opMode, alliance, PoseStorage.currentPose);
     }
 
     public Robot(OpMode opMode, Alliance alliance, Pose2d startingPosition) {
@@ -90,14 +82,19 @@ public class Robot {
 
         driveBase = new DriveBase(this);
         bulkData = new BulkData(this);
+        //Set the cache mode to manual
+        bulkData.setManual();
         shooter = new Shooter(this);
 
-        if (alliance.isAuto) {
-            odometry = alliance == Alliance.RED ? new Odometry(this,
-                    redTraditionalStartingPosition) : new Odometry(this, blueTraditionalStartingPosition);
-        } else {
-            odometry = new Odometry(this, startingPosition);
-        }
+        odometry = new Odometry(this, startingPosition);
+
+
+//        if (alliance.isAuto) {
+//            odometry = alliance == Alliance.RED ? new Odometry(this,
+//                    redTraditionalStartingPosition) : new Odometry(this, blueTraditionalStartingPosition);
+//        } else {
+//            odometry = new Odometry(this, startingPosition);
+//        }
 
 
         //Initialize RR
@@ -109,7 +106,7 @@ public class Robot {
 
 
         //Set the dashboard update time to 25 ms
-        dashboard.setTelemetryTransmissionInterval(25);
+        dashboard.setTelemetryTransmissionInterval(50);
 
         //Set the loop time action for telemetry up
         opMode.telemetry.addData("Loop Time (ms)", "%.2f", () -> timer.milliseconds());
@@ -144,6 +141,14 @@ public class Robot {
 
         //Reset the loop time timer
         timer.reset();
+    }
+
+    //Stops all motors and writes the current pose to a static variable for teleop
+    public void end(){
+        shooter.turnOnFlywheel(false);
+        driveBase.stop();
+
+        if(alliance.isAuto) PoseStorage.currentPose = Odometry.world_pose;
     }
 
     private void compileTelemetry() {

@@ -36,8 +36,7 @@ class OdometryLocalizer(val hardwareMap: HardwareMap):
 
     init {
 
-        // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
-
+        //This will reverse any encoder's value without reversing the motor it connects to.
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         left_y_encoder.direction = Encoder.Direction.REVERSE
         right_y_encoder.direction = Encoder.Direction.REVERSE

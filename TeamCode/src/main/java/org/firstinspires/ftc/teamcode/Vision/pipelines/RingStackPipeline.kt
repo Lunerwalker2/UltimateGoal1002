@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode.Vision.pipelines
 
 
 import com.acmerobotics.dashboard.config.Config
-import org.opencv.core.Core
-import org.opencv.core.Mat
-import org.opencv.core.Rect
-import org.opencv.core.Scalar
+import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 
@@ -18,9 +15,9 @@ class RingStackPipeline(): OpenCvPipeline() {
     companion object {
         //Dimensions for the sample region at the top of the stack
         @JvmField
-        var topRingRegionXValue: Double = 0.27
+        var topRingRegionXValue: Double = 0.54
         @JvmField
-        var topRingRegionYValue: Double = 0.612
+        var topRingRegionYValue: Double = 0.43
         //Maybe make var??
         @JvmField
         val topRingRegionWidth: Int = 20
@@ -29,9 +26,9 @@ class RingStackPipeline(): OpenCvPipeline() {
 
         //Dimensions for the sample region at the bottom of the stack
         @JvmField
-        var bottomRingRegionXValue: Double = 0.25
+        var bottomRingRegionXValue: Double = 0.54
         @JvmField
-        var bottomRingRegionYValue: Double = 0.675
+        var bottomRingRegionYValue: Double = 0.64
 
         @JvmField
         val bottomRingRegionWidth: Int = 20
@@ -62,10 +59,6 @@ class RingStackPipeline(): OpenCvPipeline() {
     //Define some Mats we can reuse.
     var yCbCrMat = Mat()
     var cBmat = Mat()
-
-
-
-
 
 
     /*
@@ -141,8 +134,13 @@ class RingStackPipeline(): OpenCvPipeline() {
             DeliveryZone.B, DeliveryZone.C -> Imgproc.rectangle(input, bottomSampleRect, Scalar(20.0, 220.0, 70.0), 2)
         }
 
-
-
+        Imgproc.putText(input,
+                when(deliveryZone){
+                    DeliveryZone.A -> "Delivery Zone A"
+                    DeliveryZone.B -> "Delivery Zone B"
+                    DeliveryZone.C -> "Delivery Zone C"
+                                  },
+                Point(0.0, 0.0), 1, 1.0, Scalar(255.0, 0.0, 0.0))
 
 
 

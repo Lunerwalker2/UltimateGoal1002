@@ -45,7 +45,7 @@ object DriveFields {
 
     @JvmStatic
     fun normalizedVels(): Pose2d {
-        val baseVel = Pose2d(-movement_y, -movement_x, -movement_turn) //LEAVE as is
+        val baseVel = Pose2d(movement_y, movement_x, movement_turn) //LEAVE as is
         val vel: Pose2d
         vel = if (abs(baseVel.x) + abs(baseVel.y) + abs(baseVel.heading) > 1) {
             // re-normalize the powers according to the weights

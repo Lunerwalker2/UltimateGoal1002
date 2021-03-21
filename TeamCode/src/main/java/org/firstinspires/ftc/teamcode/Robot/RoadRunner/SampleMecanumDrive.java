@@ -117,7 +117,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+        // We set this to be our own localizer
+        setLocalizer(robot.odometry.getLocalizer());
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -315,4 +316,5 @@ public class SampleMecanumDrive extends MecanumDrive {
     public double getRawExternalHeading() {
         return 0;
     }
+
 }

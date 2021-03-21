@@ -27,8 +27,8 @@ public class HardwareNames {
     }
 
     public static class Shooter {
-        public static final String SHOOTER_MOTOR_1 = "shooter motor 1";
-        public static final String SHOOTER_MOTOR_2 = "shooter motor 2";
+        public static final String SHOOTER_MOTOR_1 = "left_y_encoder";
+        public static final String SHOOTER_MOTOR_2 = "x_encoder";
 
         public static final String SHOOTER_ENCODER = SHOOTER_MOTOR_2;
 

@@ -41,7 +41,7 @@ class BulkData(robot: Robot): Component(robot) {
     /**
      * Set the mode as MANUAL
      */
-    private fun setManual() {
+    fun setManual() {
         modules.forEach { module: LynxModule -> module.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL   }
     }
 

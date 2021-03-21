@@ -28,8 +28,6 @@ class Odometry(robot: Robot, startingPose: Pose2d): Component(robot) {
     init {
         localizer = OdometryLocalizer(hardwareMap)
 
-        localizer.poseEstimate = startingPose
-
         setPose(startingPose)
     }
 
