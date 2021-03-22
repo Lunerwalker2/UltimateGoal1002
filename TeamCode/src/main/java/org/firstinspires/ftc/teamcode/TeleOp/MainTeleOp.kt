@@ -95,6 +95,9 @@ class MainTeleOp : LinearOpMode() {
      *
      * left bumper = flywheel toggle
      *
+     * left trigger = intake
+     * left trigger + a = outtake (reversed)
+     *
      * dpad up/down = cycle through shooter targets (high goal, left powershot,
      * central powershot, and right powershot)
      *

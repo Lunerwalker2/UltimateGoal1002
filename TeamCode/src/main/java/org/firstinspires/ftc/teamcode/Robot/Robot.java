@@ -49,6 +49,8 @@ public class Robot {
 
     public Shooter shooter;
 
+    public Intake intake;
+
 
     //Road Runner Component
 
@@ -85,6 +87,7 @@ public class Robot {
         //Set the cache mode to manual
         bulkData.setManual();
         shooter = new Shooter(this);
+        intake = new Intake(this);
 
         odometry = new Odometry(this, startingPosition);
 
@@ -121,6 +124,13 @@ public class Robot {
 
         //Update the odometry
         odometry.update();
+
+
+        //Update the shooter
+        shooter.update();
+
+        //Update the intake
+        intake.update();
 
 
         if (alliance.isAuto) {

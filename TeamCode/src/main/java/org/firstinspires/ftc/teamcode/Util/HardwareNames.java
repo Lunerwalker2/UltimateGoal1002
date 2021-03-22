@@ -21,6 +21,10 @@ public class HardwareNames {
         public static final String X_ENCODER = "x_encoder";
     }
 
+    public static class Intake {
+        public static final String INTAKE_MOTOR = "intake_motor";
+    }
+
     public static class Sensors {
         public static final String LEFT_HUB_IMU = "imu";
         public static final String RIGHT_HUB_IMU = "imu 1";

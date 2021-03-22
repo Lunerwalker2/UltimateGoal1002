@@ -50,7 +50,8 @@ class Shooter(robot: Robot): Component(robot) {
         var flywheelVelocitykV: Double = 12.0;
 
         //The target velocity for the flywheel when it is on. In terms of ticks per rev of the encoder
-        private val flywheelTargetVelocity = 100000.0; //TODO: Find this
+        //2000 RPM, rev hd hex encoder shaft is 28 ticks per rev
+        private val flywheelTargetVelocity = 933.0; //TODO: Find this
 
 
         //Returns angle to a target in radians from the x-axis
@@ -124,13 +125,19 @@ class Shooter(robot: Robot): Component(robot) {
 
 
     init {
-        shooterMotor1 = hardwareMap.get(DcMotorSimple::class.java, HardwareNames.Shooter.SHOOTER_MOTOR_1)
-        shooterMotor2 = hardwareMap.get(DcMotorSimple::class.java, HardwareNames.Shooter.SHOOTER_MOTOR_2)
+        shooterMotor1 = hardwareMap[DcMotorSimple::class.java, HardwareNames.Shooter.SHOOTER_MOTOR_1]
+        shooterMotor2 = hardwareMap[DcMotorSimple::class.java, HardwareNames.Shooter.SHOOTER_MOTOR_2]
 
-        shooterWheelEncoder = hardwareMap.get(DcMotorEx::class.java, HardwareNames.Shooter.SHOOTER_ENCODER)
+        /*
+        This is the internal encoder of a shooter motor, however it is on the motor port of
+        another motor due to our dead wheel encoders. As long as we never mess with the motor, using
+        it like this is fine.
+         */
+        shooterWheelEncoder = hardwareMap[DcMotorEx::class.java, HardwareNames.Shooter.SHOOTER_ENCODER]
 
-        shooterAngleServo = hardwareMap.get(Servo::class.java, HardwareNames.Shooter.SHOOTER_ANGLE_SERVO)
+        shooterAngleServo = hardwareMap[Servo::class.java, HardwareNames.Shooter.SHOOTER_ANGLE_SERVO]
 
+        //Never change this
         shooterWheelEncoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
         flywheelVeloController.setOutputBounds(-1.0, 1.0)
@@ -169,7 +176,6 @@ class Shooter(robot: Robot): Component(robot) {
 
     fun turnOnFlywheel(flywheelOn: Boolean){
         this.flywheelOn = flywheelOn
-        flywheelVeloController.reset()
     }
 
     fun setToManualAngle(){
