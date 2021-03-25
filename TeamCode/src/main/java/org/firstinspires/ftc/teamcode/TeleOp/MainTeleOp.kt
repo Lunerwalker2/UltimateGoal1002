@@ -93,13 +93,23 @@ class MainTeleOp : LinearOpMode() {
      *
      * Gamepad 2 (Manipulator)
      *
+     *
+     * Wobble goal arm up & down toggle = x
+     * Wobble goal claw open & close toggle = b
+     *
+     * Hopper up and down toggle = a
+     * flicker cycle = right bumper
+     *
+     *
      * left bumper = flywheel toggle
+     *
+     *
      *
      * left trigger = intake
      * left trigger + a = outtake (reversed)
      *
      * dpad up/down = cycle through shooter targets (high goal, left powershot,
-     * central powershot, and right powershot)
+     * central powershot, and right powershot) //REMOVED
      *
      */
     @Throws(InterruptedException::class)

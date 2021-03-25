@@ -35,9 +35,9 @@ class Intake(robot: Robot): Component(robot) {
     }
 
 
-    fun startIntake() = setIntakePower(1.0)
+    fun startIntake() = setIntakePower(-1.0)
 
-    fun startOutake() = setIntakePower(-1.0)
+    fun startOutake() = setIntakePower(1.0)
 
     fun stop() = setIntakePower(0.0)
 

@@ -21,8 +21,13 @@ public class HardwareNames {
         public static final String X_ENCODER = "x_encoder";
     }
 
+    public static class WobbleGoal {
+        public static final String WOBBLE_ARM = "wobble_arm";
+        public static final String WOBBLE_CLAW = "wobble_claw";
+    }
+
     public static class Intake {
-        public static final String INTAKE_MOTOR = "intake_motor";
+        public static final String INTAKE_MOTOR = "left_y_encoder";
     }
 
     public static class Sensors {
