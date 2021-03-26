@@ -26,6 +26,11 @@ public class HardwareNames {
         public static final String WOBBLE_CLAW = "wobble_claw";
     }
 
+    public static class Hopper {
+        public static final String HOPPER_SERVO = "hopper_servo";
+        public static final String FLICKER = "flicker";
+    }
+
     public static class Intake {
         public static final String INTAKE_MOTOR = "left_y_encoder";
     }

@@ -73,6 +73,13 @@ class MainTeleOp : LinearOpMode() {
 
     private lateinit var flywheelToggle: Toggle
 
+    private lateinit var wobbleGoalArmToggle: Toggle
+
+    private lateinit var wobbleGoalClawToggle: Toggle
+
+    private lateinit var hopperToggle: Toggle
+
+
 
     private var slowModeMult: Double = 1.0
 
@@ -86,7 +93,7 @@ class MainTeleOp : LinearOpMode() {
      * left stick y = robot translational
      * right stick x = robot rotational
      * left bumper = slow mode
-     * right bumper = aim mode toggle (Manual or auto)
+     * right bumper = aim mode toggle (Manual or auto) //Removed
      *
      *
      *
@@ -116,22 +123,22 @@ class MainTeleOp : LinearOpMode() {
     override fun runOpMode() {
 
         //This lets the driver select which starting position to use
-
-        telemetry.addLine("Please indicate the starting position!")
-        telemetry.addLine("(Gamepad 1) Press X to use the auto position, and Y to use" +
-                "the default teleop position of 0, 0 facing towards the goal.")
-        telemetry.update()
-        while(!gamepad1.x || !gamepad1.y){
-            if(gamepad1.x){
-                robot = Robot(this, Alliance.TELEOP)
-                telemetry.addLine("Starting position set as last known position in auto!")
-            }
-            if(gamepad1.y){
-                robot = Robot(this, Alliance.TELEOP, defaultStartingPose)
-                telemetry.addLine("Starting position is set as default!")
-            }
-        }
-        telemetry.update()
+//
+//        telemetry.addLine("Please indicate the starting position!")
+//        telemetry.addLine("(Gamepad 1) Press X to use the auto position, and Y to use" +
+//                "the default teleop position of 0, 0 facing towards the goal.")
+//        telemetry.update()
+//        while(!gamepad1.x || !gamepad1.y ||!isStopRequested){
+//            if(gamepad1.x){
+//                robot = Robot(this, Alliance.TELEOP)
+//                telemetry.addLine("Starting position set as last known position in auto!")
+//            }
+//            if(gamepad1.y){
+//                robot = Robot(this, Alliance.TELEOP, defaultStartingPose)
+//                telemetry.addLine("Starting position is set as default!")
+//            }
+//        }
+//        telemetry.update()
 
         //Initialize the robot with the given position
         robot = Robot(this, Alliance.TELEOP, defaultStartingPose)
@@ -141,6 +148,24 @@ class MainTeleOp : LinearOpMode() {
         autoAimController = PIDFController(autoAimCoeffs)
         autoAimController.setOutputBounds(-1.0, 1.0)
         autoAimController.setInputBounds(-Math.PI, Math.PI) //Limits of Euler angles
+
+        hopperToggle = Toggle(
+                {robot.hopper.hopperUp = true},
+                {robot.hopper.hopperUp = false},
+                {gamepad2.a}
+        )
+
+        wobbleGoalArmToggle = Toggle(
+                {robot.wobbleGoalMover.armUp = false},
+                {robot.wobbleGoalMover.armUp = true},
+                {gamepad2.x}
+        )
+
+        wobbleGoalClawToggle = Toggle(
+                {robot.wobbleGoalMover.clawOpen = true},
+                {robot.wobbleGoalMover.clawOpen = false},
+                {gamepad2.b}
+        )
 
         //Set up auto-aim toggle
         aimModeToggle = Toggle(
@@ -169,9 +194,15 @@ class MainTeleOp : LinearOpMode() {
             //Set the slow mode to actual change the drive powers if the bumper is pressed
             slowModeMult = if(gamepad1.left_bumper) 0.5 else 1.0
 
-            aimModeToggle.update()
+            // aimModeToggle.update()
 
             flywheelToggle.update()
+
+            wobbleGoalArmToggle.update()
+
+            wobbleGoalClawToggle.update()
+
+            hopperToggle.update()
 
             //TODO: Some way to change the target
 

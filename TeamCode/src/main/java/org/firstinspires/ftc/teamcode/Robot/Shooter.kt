@@ -43,15 +43,21 @@ class Shooter(robot: Robot): Component(robot) {
 
 
     companion object{
-        @JvmField
-        var flywheelVeloCoefficients = PIDCoefficients(kP = 2.0)
-
-        @JvmField
-        var flywheelVelocitykV: Double = 12.0;
 
         //The target velocity for the flywheel when it is on. In terms of ticks per rev of the encoder
         //2000 RPM, rev hd hex encoder shaft is 28 ticks per rev
         private val flywheelTargetVelocity = 933.0; //TODO: Find this
+
+        private val flywheelMaxVelocity = 1200.0; //i had to choose a number
+
+
+        @JvmField
+        var flywheelVeloCoefficients = PIDCoefficients(kP = 0.05)
+
+        @JvmField
+        var flywheelVelocitykV: Double = 1/ flywheelMaxVelocity;
+
+
 
 
         //Returns angle to a target in radians from the x-axis

@@ -51,6 +51,10 @@ public class Robot {
 
     public Intake intake;
 
+    public WobbleGoalMover wobbleGoalMover;
+
+    public Hopper hopper;
+
 
     //Road Runner Component
 
@@ -88,6 +92,8 @@ public class Robot {
         bulkData.setManual();
         shooter = new Shooter(this);
         intake = new Intake(this);
+        wobbleGoalMover = new WobbleGoalMover(this);
+        hopper = new Hopper(this);
 
         odometry = new Odometry(this, startingPosition);
 
@@ -131,6 +137,10 @@ public class Robot {
 
         //Update the intake
         intake.update();
+
+        wobbleGoalMover.update();
+
+        hopper.update();
 
 
         if (alliance.isAuto) {
