@@ -29,6 +29,7 @@ class MainAuto(): AutoBase() {
 
         timer.reset()
 
+        //TODO: This does not work with an AUTO Alliance, you must use rr
         DriveFields.movement_y = 1.0
         while(timer.milliseconds() < 2000){
             robot.update()

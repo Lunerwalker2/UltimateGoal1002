@@ -36,7 +36,7 @@ public class MathUtil {
     }
 
     /**
-     * Normalize to -2pi to 2pi
+     * Normalize to -pi to pi
      */
     public static double normalizeRad(double angle){
         while (angle >= 1.0) angle -= 2.0;

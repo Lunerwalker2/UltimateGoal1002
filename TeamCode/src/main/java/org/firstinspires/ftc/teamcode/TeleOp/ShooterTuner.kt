@@ -29,7 +29,7 @@ class ShooterTuner: LinearOpMode() {
         //The target velocity for the flywheel when it is on. In terms of ticks per rev of the encoder
         //2000 RPM, rev hd hex encoder shaft is 28 ticks per rev
         @JvmField
-        var flywheelTargetVelocity = 700.0; //TODO: Find this
+        var flywheelTargetVelocity = 800.0; //TODO: Find this
 
         @JvmField
         var flywheelMaxVelocity = 1000.0; //i had to choose a number
@@ -67,7 +67,8 @@ class ShooterTuner: LinearOpMode() {
 
     private var packet = TelemetryPacket()
 
-    private lateinit var flywheelToggle: Toggle
+    private var flywheelBounce = false
+    private var flywheelChanged = false
 
 
     @Throws(InterruptedException::class)
@@ -99,38 +100,34 @@ class ShooterTuner: LinearOpMode() {
         while (opModeIsActive()){
             if(isStopRequested) return
 
-//            flywheelVeloController = PIDFController(
-//                    pid = flywheelVeloCoefficients,
-//                    kV = flywheelVelocitykV
-//            )
+            flywheelVeloController = PIDFController(
+                    flywheelVeloCoefficients,
+                    flywheelVelocitykV
+            )
 
             packet = TelemetryPacket()
 
 
-            if(gamepad1.left_bumper){
-                shooterMotor1.power = -1.0
-                shooterMotor2.power = -1.0
+            if(gamepad2.left_bumper && !flywheelBounce){
+                changeFlywheel();
+                flywheelBounce = true;
+            } else if(!gamepad2.left_bumper){
+                flywheelBounce = false;
+            }
+
+
+            //Give the velocity controller the current readings, and get an output
+            var flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
+
+
+
+            if(flywheelOn){
+                shooterMotor1.power = -flywheelMotorOutput
+                shooterMotor2.power = -flywheelMotorOutput
             } else {
                 shooterMotor1.power = 0.0
                 shooterMotor2.power = 0.0
             }
-
-//
-//            //Give the velocity controller the current readings, and get an output
-//            var flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
-//
-//
-//            shooterMotor1.power = flywheelMotorOutput
-//            shooterMotor2.power = flywheelMotorOutput
-
-
-//            if(flywheelOn){
-//                shooterMotor1.power = flywheelMotorOutput
-//                shooterMotor2.power = flywheelMotorOutput
-//            } else {
-//                shooterMotor1.power = 0.0
-//                shooterMotor2.power = 0.0
-//            }
 
             packet.put("Target Velocity", if(flywheelOn) flywheelTargetVelocity else 0.0)
             packet.put("Measured Velocity", shooterWheelEncoder.velocity)
@@ -140,5 +137,18 @@ class ShooterTuner: LinearOpMode() {
         }
 
 
+    }
+
+    private fun changeFlywheel(){
+        if(!flywheelChanged){
+            flywheelOn = true
+            flywheelVeloController.reset()
+            flywheelVeloController.targetVelocity = flywheelTargetVelocity
+            flywheelChanged = true
+        } else {
+            flywheelOn = false
+            flywheelVeloController.targetVelocity = 0.0
+            flywheelChanged = false
+        }
     }
 }

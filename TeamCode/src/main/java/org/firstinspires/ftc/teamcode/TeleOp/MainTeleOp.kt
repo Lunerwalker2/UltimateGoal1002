@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.Robot.Robot
 import org.firstinspires.ftc.teamcode.Util.Alliance
 import org.firstinspires.ftc.teamcode.Util.Toggle
 
+import org.firstinspires.ftc.teamcode.Util.MathUtil.cubeInput
+
 @TeleOp(name = "Main TeleOp")
 @Config
 class MainTeleOp : LinearOpMode() {
@@ -70,15 +72,6 @@ class MainTeleOp : LinearOpMode() {
 
     private lateinit var aimModeToggle: Toggle
 
-    private lateinit var flywheelToggle: Toggle
-
-    private lateinit var wobbleGoalArmToggle: Toggle
-
-    private lateinit var wobbleGoalClawToggle: Toggle
-
-    private lateinit var hopperToggle: Toggle
-
-
 
     private var slowModeMult: Double = 1.0
 
@@ -91,6 +84,12 @@ class MainTeleOp : LinearOpMode() {
 
     private var flickerBounce = false
     private var flickerChanged = false
+
+    private var hopperBounce = false
+    private var hopperChanged = false
+
+    private var flywheelBounce = false
+    private var flywheelChanged = false
 
     /**
      * Let's keep a list of the current robot controls here:
@@ -112,7 +111,7 @@ class MainTeleOp : LinearOpMode() {
      * Wobble goal claw open & close toggle = b
      *
      * Hopper up and down toggle = a
-     * flicker cycle = right bumper
+     * flicker toggle = right bumper
      *
      *
      * left bumper = flywheel toggle
@@ -120,7 +119,7 @@ class MainTeleOp : LinearOpMode() {
      *
      *
      * left trigger = intake
-     * left trigger + a = outtake (reversed)
+     * right trigger = outtake (reversed)
      *
      * dpad up/down = cycle through shooter targets (high goal, left powershot,
      * central powershot, and right powershot) //REMOVED
@@ -156,24 +155,11 @@ class MainTeleOp : LinearOpMode() {
         autoAimController.setOutputBounds(-1.0, 1.0)
         autoAimController.setInputBounds(-Math.PI, Math.PI) //Limits of Euler angles
 
-        hopperToggle = Toggle(
-                {robot.hopper.hopperUp = true},
-                {robot.hopper.hopperUp = false},
-                {gamepad2.a}
-        )
-
         //Set up auto-aim toggle
         aimModeToggle = Toggle(
                 { aimMode = AimMode.AUTO },
                 { aimMode = AimMode.MANUAL },
                 { gamepad1.right_bumper }
-        )
-
-        //Srt up flywheel toggle
-        flywheelToggle = Toggle(
-                { robot.shooter.turnOnFlywheel(true) },
-                { robot.shooter.turnOnFlywheel(false) },
-                { gamepad2.left_bumper }
         )
 
         //Initialization done, wait for start
@@ -190,8 +176,6 @@ class MainTeleOp : LinearOpMode() {
             slowModeMult = if(gamepad1.left_bumper) 0.5 else 1.0
 
             // aimModeToggle.update()
-
-            flywheelToggle.update()
 
 
             if(gamepad2.x && !wobbleGoalArmBounce){
@@ -215,10 +199,20 @@ class MainTeleOp : LinearOpMode() {
                 flickerBounce = false
             }
 
+            if(gamepad2.a && !hopperBounce){
+                moveHopper()
+                hopperBounce = true
+            } else if(!gamepad2.a){
+                hopperBounce = false
+            }
 
-            hopperToggle.update()
+            if(gamepad2.left_bumper && !flywheelBounce){
+                changeFlywheel()
+                flywheelBounce = true
+            } else if(!gamepad2.left_bumper){
+                flywheelBounce = false
+            }
 
-            robot.shooter.turnOnFlywheel(gamepad2.left_bumper)
             //TODO: Some way to change the target
 
 
@@ -226,8 +220,8 @@ class MainTeleOp : LinearOpMode() {
                 AimMode.MANUAL -> {
 
                     //Give the translation controls of the robot
-                    DriveFields.movement_x = -gamepad1.left_stick_x.toDouble() * slowModeMult
-                    DriveFields.movement_y = -gamepad1.left_stick_y.toDouble() * slowModeMult
+                    DriveFields.movement_x = cubeInput(-gamepad1.left_stick_x.toDouble(), 0.7) * slowModeMult
+                    DriveFields.movement_y = cubeInput(-gamepad1.left_stick_y.toDouble(), 0.7) * slowModeMult
                     // We reverse our rotation empirically for our dt
                     DriveFields.movement_turn = gamepad1.right_stick_x.toDouble() * slowModeMult
                 }
@@ -235,12 +229,12 @@ class MainTeleOp : LinearOpMode() {
 
                     // Create a vector from the gamepad x/y inputs which is the field relative movement
                     // Then, rotate that vector by the inverse of that heading for field centric control
-                    var fieldFrameInput = Vector2d(
+                    val fieldFrameInput = Vector2d(
                             (-gamepad1.left_stick_y).toDouble(),
                             (-gamepad1.left_stick_x).toDouble()
                     )
 
-                    var robotFrameInput = fieldFrameInput.rotated(-Odometry.world_pose.heading)
+                    val robotFrameInput = fieldFrameInput.rotated(-Odometry.world_pose.heading)
 
                     // Difference between the target vector and the bot's position
 
@@ -285,32 +279,52 @@ class MainTeleOp : LinearOpMode() {
     }
 
     private fun moveWobbleGoalArm(){
-        if(!wobbleGoalArmChanged){
+        wobbleGoalArmChanged = if(!wobbleGoalArmChanged){
             robot.wobbleGoalMover.wobbleGoalArm(true)
-            wobbleGoalArmChanged = true
+            true
         } else {
             robot.wobbleGoalMover.wobbleGoalArm(false)
-            wobbleGoalArmChanged = false
+            false
         }
     }
 
     private fun moveWobbleGoalClaw(){
-        if(!wobbleGoalClawChanged){
+        wobbleGoalClawChanged = if(!wobbleGoalClawChanged){
             robot.wobbleGoalMover.wobbleGoalClaw(true)
-            wobbleGoalClawChanged = true
+            true
         } else {
             robot.wobbleGoalMover.wobbleGoalClaw(false)
-            wobbleGoalClawChanged = false
+            false
         }
     }
 
     private fun moveFlicker(){
-        if(!flickerChanged){
+        flickerChanged = if(!flickerChanged){
             robot.hopper.flick(true)
-            flickerChanged = true
+            true
         } else {
             robot.hopper.flick(false)
-            flickerChanged = false
+            false
+        }
+    }
+
+    private fun moveHopper(){
+        hopperChanged = if(!hopperChanged){
+            robot.hopper.hopperUp = true
+            true
+        } else {
+            robot.hopper.hopperUp = false
+            false
+        }
+    }
+
+    private fun changeFlywheel(){
+        flywheelChanged = if(!flywheelChanged){
+            robot.shooter.turnOnFlywheel(true)
+            true
+        } else {
+            robot.shooter.turnOnFlywheel(false)
+            false
         }
     }
 

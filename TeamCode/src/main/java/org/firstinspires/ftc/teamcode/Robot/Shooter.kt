@@ -46,16 +46,16 @@ class Shooter(robot: Robot): Component(robot) {
 
         //The target velocity for the flywheel when it is on. In terms of ticks per rev of the encoder
         //2000 RPM, rev hd hex encoder shaft is 28 ticks per rev
-        private val flywheelTargetVelocity = 933.0; //TODO: Find this
+        private val flywheelTargetVelocity = 800.0; //TODO: Find this
 
-        private val flywheelMaxVelocity = 1200.0; //i had to choose a number
+        private val flywheelMaxVelocity = 1000.0; //i had to choose a number
 
-
-        @JvmField
-        var flywheelVeloCoefficients = PIDCoefficients(kP = 0.05)
 
         @JvmField
-        var flywheelVelocitykV: Double = 1/ flywheelMaxVelocity;
+        var flywheelVeloCoefficients = PIDCoefficients(kP = 0.01)
+
+        @JvmField
+        var flywheelVelocitykV: Double = 1 / flywheelMaxVelocity;
 
 
 
@@ -123,7 +123,10 @@ class Shooter(robot: Robot): Component(robot) {
 
      */
 
-    private val flywheelVeloController = PIDFController(flywheelVeloCoefficients, flywheelVelocitykV)
+    private val flywheelVeloController = PIDFController(
+            flywheelVeloCoefficients,
+            flywheelVelocitykV
+    )
 
 
     //The Look-Up Table (LUT) that gives an angle for a distance
@@ -146,7 +149,7 @@ class Shooter(robot: Robot): Component(robot) {
         //Never change this
         shooterWheelEncoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
-        flywheelVeloController.setOutputBounds(-1.0, 1.0)
+
         flywheelVeloController.targetVelocity = 0.0
 
         //Add all the measured values to the LUT
@@ -162,11 +165,12 @@ class Shooter(robot: Robot): Component(robot) {
     fun update(){
 
         //Give the velocity controller the current readings, and get an output
-//        val flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
+        val flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
 
+        //For some absolutely god awful dumb stupid reason the shooter motors are reversed
         if(flywheelOn){
-            shooterMotor1.power = -1.0
-            shooterMotor2.power = -1.0
+            shooterMotor1.power = -flywheelMotorOutput
+            shooterMotor2.power = -flywheelMotorOutput
         } else {
             shooterMotor1.power = 0.0
             shooterMotor2.power = 0.0
@@ -184,7 +188,14 @@ class Shooter(robot: Robot): Component(robot) {
     }
 
     fun turnOnFlywheel(flywheelOn: Boolean){
-        this.flywheelOn = flywheelOn
+        if(flywheelOn){
+            this.flywheelOn = true
+            flywheelVeloController.reset()
+            flywheelVeloController.targetVelocity = flywheelTargetVelocity
+        } else {
+            this.flywheelOn = false
+            flywheelVeloController.targetVelocity = 0.0
+        }
     }
 
     fun setToManualAngle(){
