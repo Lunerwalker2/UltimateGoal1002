@@ -11,15 +11,10 @@ class BulkData(robot: Robot): Component(robot) {
 
     val HUB_RIGHT: LynxModule
 
-    private val modules: MutableList<LynxModule> = ArrayList(2)
 
     init {
         HUB_LEFT = hardwareMap.get(LynxModule::class.java, HardwareNames.Hubs.HUB_LEFT)
         HUB_RIGHT = hardwareMap.get(LynxModule::class.java, HardwareNames.Hubs.HUB_RIGHT)
-
-        //add to list for easy access
-        modules.add(HUB_LEFT)
-        modules.add(HUB_RIGHT)
 
     }
 
@@ -34,7 +29,8 @@ class BulkData(robot: Robot): Component(robot) {
      * Clear the cache
      */
     private fun clearCache() {
-        modules.forEach {module: LynxModule -> module.clearBulkCache()}
+        HUB_LEFT.clearBulkCache()
+        HUB_RIGHT.clearBulkCache()
 
     }
 
@@ -42,21 +38,24 @@ class BulkData(robot: Robot): Component(robot) {
      * Set the mode as MANUAL
      */
     fun setManual() {
-        modules.forEach { module: LynxModule -> module.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL   }
+        HUB_LEFT.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL
+        HUB_RIGHT.bulkCachingMode =  LynxModule.BulkCachingMode.MANUAL
     }
 
     /**
      * Set the mode as AUTO
      */
     fun setAuto() {
-        modules.forEach { module: LynxModule -> module.bulkCachingMode = LynxModule.BulkCachingMode.AUTO   }
+        HUB_LEFT.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
+        HUB_RIGHT.bulkCachingMode =  LynxModule.BulkCachingMode.AUTO
     }
 
     /**
      * Set the mode as OFF
      */
     fun setOff() {
-        modules.forEach { module: LynxModule -> module.bulkCachingMode = LynxModule.BulkCachingMode.OFF   }
+        HUB_LEFT.bulkCachingMode = LynxModule.BulkCachingMode.OFF
+        HUB_RIGHT.bulkCachingMode =  LynxModule.BulkCachingMode.OFF
     }
 
     

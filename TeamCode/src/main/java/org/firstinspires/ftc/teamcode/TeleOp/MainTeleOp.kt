@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.Util.Toggle
 class MainTeleOp : LinearOpMode() {
 
 
-
     companion object {
         //The controller that rotates the robot to aim the shooter automatically
         @JvmField
@@ -84,6 +83,14 @@ class MainTeleOp : LinearOpMode() {
     private var slowModeMult: Double = 1.0
 
 
+    private var wobbleGoalArmBounce = false
+    private var wobbleGoalArmChanged = false
+
+    private var wobbleGoalClawBounce = false
+    private var wobbleGoalClawChanged = false
+
+    private var flickerBounce = false
+    private var flickerChanged = false
 
     /**
      * Let's keep a list of the current robot controls here:
@@ -155,18 +162,6 @@ class MainTeleOp : LinearOpMode() {
                 {gamepad2.a}
         )
 
-        wobbleGoalArmToggle = Toggle(
-                {robot.wobbleGoalMover.armUp = false},
-                {robot.wobbleGoalMover.armUp = true},
-                {gamepad2.x}
-        )
-
-        wobbleGoalClawToggle = Toggle(
-                {robot.wobbleGoalMover.clawOpen = true},
-                {robot.wobbleGoalMover.clawOpen = false},
-                {gamepad2.b}
-        )
-
         //Set up auto-aim toggle
         aimModeToggle = Toggle(
                 { aimMode = AimMode.AUTO },
@@ -198,12 +193,32 @@ class MainTeleOp : LinearOpMode() {
 
             flywheelToggle.update()
 
-            wobbleGoalArmToggle.update()
 
-            wobbleGoalClawToggle.update()
+            if(gamepad2.x && !wobbleGoalArmBounce){
+                moveWobbleGoalArm()
+                wobbleGoalArmBounce = true
+            } else if(!gamepad2.x){
+                wobbleGoalArmBounce = false
+            }
+
+            if(gamepad2.b && !wobbleGoalClawBounce){
+                moveWobbleGoalClaw()
+                wobbleGoalClawBounce = true
+            } else if(!gamepad2.b){
+                wobbleGoalClawBounce = false
+            }
+
+            if(gamepad2.right_bumper && !flickerBounce){
+                moveFlicker()
+                flickerBounce = true
+            } else if(!gamepad2.right_bumper){
+                flickerBounce = false
+            }
+
 
             hopperToggle.update()
 
+            robot.shooter.turnOnFlywheel(gamepad2.left_bumper)
             //TODO: Some way to change the target
 
 
@@ -267,6 +282,36 @@ class MainTeleOp : LinearOpMode() {
             robot.update()
         }
         robot.end()
+    }
+
+    private fun moveWobbleGoalArm(){
+        if(!wobbleGoalArmChanged){
+            robot.wobbleGoalMover.wobbleGoalArm(true)
+            wobbleGoalArmChanged = true
+        } else {
+            robot.wobbleGoalMover.wobbleGoalArm(false)
+            wobbleGoalArmChanged = false
+        }
+    }
+
+    private fun moveWobbleGoalClaw(){
+        if(!wobbleGoalClawChanged){
+            robot.wobbleGoalMover.wobbleGoalClaw(true)
+            wobbleGoalClawChanged = true
+        } else {
+            robot.wobbleGoalMover.wobbleGoalClaw(false)
+            wobbleGoalClawChanged = false
+        }
+    }
+
+    private fun moveFlicker(){
+        if(!flickerChanged){
+            robot.hopper.flick(true)
+            flickerChanged = true
+        } else {
+            robot.hopper.flick(false)
+            flickerChanged = false
+        }
     }
 
 }

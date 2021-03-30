@@ -11,9 +11,9 @@ class Toggle(private val action1: () -> Unit, private val action2: () -> Unit, p
     fun update(){
         state = if(control.invoke() && !state){
             takeAction()
-            true;
+            true
         } else {
-            false;
+            false
         }
     }
 

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.TeleOp.JankWoodTeleOp
 
 object DriveFields {
     @JvmField
@@ -39,24 +39,24 @@ object DriveFields {
     fun distributePowers(powers: List<Double>) {
         lf_power = powers[0]
         lb_power = powers[1]
-        rf_power = powers[2]
-        rb_power = powers[3]
+        rf_power = powers[3]
+        rb_power = powers[2]
     }
 
     @JvmStatic
     fun normalizedVels(): Pose2d {
-        val baseVel = Pose2d(movement_y, movement_x, movement_turn) //LEAVE as is
-        val vel: Pose2d
-        vel = if (abs(baseVel.x) + abs(baseVel.y) + abs(baseVel.heading) > 1) {
+        val drivePower = Pose2d(movement_y, movement_x, movement_turn) //LEAVE as is
+
+        var vel = drivePower
+        if ((Math.abs(drivePower.x) + Math.abs(drivePower.y)
+                        + Math.abs(drivePower.heading)) > 1) {
             // re-normalize the powers according to the weights
-            val denom = VX_WEIGHT * abs(baseVel.x) + VY_WEIGHT * abs(baseVel.y) + OMEGA_WEIGHT * abs(baseVel.heading)
-            Pose2d(
-                    VX_WEIGHT * baseVel.x,
-                    VY_WEIGHT * baseVel.y,
-                    OMEGA_WEIGHT * baseVel.heading
+            val denom: Double = VX_WEIGHT * Math.abs(drivePower.x) + VY_WEIGHT * Math.abs(drivePower.y) + OMEGA_WEIGHT * Math.abs(drivePower.heading)
+            vel = Pose2d(
+                    VX_WEIGHT * drivePower.x,
+                    VY_WEIGHT * drivePower.y,
+                    OMEGA_WEIGHT * drivePower.heading
             ).div(denom)
-        } else {
-            baseVel
         }
         return vel
     }

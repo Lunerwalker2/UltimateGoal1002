@@ -41,17 +41,17 @@ public class HardwareNames {
     }
 
     public static class Shooter {
-        public static final String SHOOTER_MOTOR_1 = "left_y_encoder";
-        public static final String SHOOTER_MOTOR_2 = "x_encoder";
+        public static final String SHOOTER_MOTOR_1 = "right_y_encoder";
+        public static final String SHOOTER_MOTOR_2 = "shooter_motor_two";
 
         public static final String SHOOTER_ENCODER = SHOOTER_MOTOR_2;
 
-        public static final String SHOOTER_ANGLE_SERVO = "shooter angle servo";
+        public static final String SHOOTER_ANGLE_SERVO = "shooter_angle_servo";
     }
 
     public static class Hubs {
-        public static final String HUB_LEFT = "Expansion Hub 10";
-        public static final String HUB_RIGHT = "Expansion Hub 1";
+        public static final String HUB_LEFT = "Expansion Hub 1";
+        public static final String HUB_RIGHT = "Control Hub";
     }
 
 

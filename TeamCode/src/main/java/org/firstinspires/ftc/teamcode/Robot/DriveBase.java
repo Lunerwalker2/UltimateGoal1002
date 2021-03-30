@@ -20,21 +20,24 @@ public class DriveBase extends Component {
     public DcMotorEx right_front_drive;
     public DcMotorEx right_back_drive;
 
-    private ArrayList<DcMotorEx> motors;
+    List<DcMotorEx> motors;
 
     public DriveBase(Robot robot){
         super(robot);
 
-        motors = (ArrayList<DcMotorEx>) Arrays.asList(left_front_drive, left_back_drive, right_front_drive, right_back_drive);
 
         left_front_drive = findMotor(HardwareNames.Drive.LEFT_FRONT);
         left_back_drive = findMotor(HardwareNames.Drive.LEFT_BACK);
         right_front_drive = findMotor(HardwareNames.Drive.RIGHT_FRONT);
         right_back_drive = findMotor(HardwareNames.Drive.RIGHT_BACK);
 
-        motors.forEach((motor) -> motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE));
         right_front_drive.setDirection(DcMotorEx.Direction.REVERSE);
         right_back_drive.setDirection(DcMotorEx.Direction.REVERSE);
+
+        motors = Arrays.asList(left_front_drive, left_back_drive, right_front_drive, right_back_drive);
+
+        motors.forEach((DcMotorEx motor) -> motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE));
+
 
 
         motors.forEach((motor) -> motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER));

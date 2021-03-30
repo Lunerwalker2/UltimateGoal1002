@@ -24,7 +24,7 @@ class WobbleGoalMover(robot: Robot): Component(robot) {
         // Servo position of the arm when it's slightly above horizontal
         const val armHorizontalPosition = 0.0
 
-        const val clawOpenPosition = 0.7
+        const val clawOpenPosition = 1.0
 
         const val clawClosePosition = 0.3
 
@@ -45,23 +45,20 @@ class WobbleGoalMover(robot: Robot): Component(robot) {
 
     var armUp = true
 
-    var clawOpen = false
+    var clawOpen = true
 
     fun update() {
 
-        if(armUp && wobbleGoalArm.position != armUpPosition){
-            wobbleGoalArm.position = armUpPosition
-        } else if(wobbleGoalArm.position != armHorizontalPosition){
-            wobbleGoalArm.position = armHorizontalPosition
-        }
+    }
 
+    fun wobbleGoalClaw(open: Boolean){
+        if(open) wobbleGoalClaw.position = clawOpenPosition
+        else wobbleGoalClaw.position = clawClosePosition
+    }
 
-
-        if(clawOpen && wobbleGoalClaw.position != clawOpenPosition){
-            wobbleGoalClaw.position = clawOpenPosition
-        } else if(wobbleGoalClaw.position != clawClosePosition){
-            wobbleGoalClaw.position = clawClosePosition
-        }
+    fun wobbleGoalArm(up: Boolean){
+        if(up) wobbleGoalArm.position = armUpPosition
+        else wobbleGoalArm.position = armHorizontalPosition
     }
 
 

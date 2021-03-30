@@ -147,7 +147,7 @@ class Shooter(robot: Robot): Component(robot) {
         shooterWheelEncoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
         flywheelVeloController.setOutputBounds(-1.0, 1.0)
-        flywheelVeloController.targetVelocity = flywheelTargetVelocity
+        flywheelVeloController.targetVelocity = 0.0
 
         //Add all the measured values to the LUT
         createLUTValues().forEach { entry -> shooterAngleLUT.add(entry.key, entry.value)  }
@@ -162,11 +162,14 @@ class Shooter(robot: Robot): Component(robot) {
     fun update(){
 
         //Give the velocity controller the current readings, and get an output
-        val flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
+//        val flywheelMotorOutput = flywheelVeloController.update(shooterWheelEncoder.currentPosition.toDouble(), shooterWheelEncoder.velocity)
 
         if(flywheelOn){
-            shooterMotor1.power = flywheelMotorOutput
-            shooterMotor2.power = flywheelMotorOutput
+            shooterMotor1.power = -1.0
+            shooterMotor2.power = -1.0
+        } else {
+            shooterMotor1.power = 0.0
+            shooterMotor2.power = 0.0
         }
 
         //TODO: Uncomment this when we have adjustable angle shooter
@@ -220,7 +223,8 @@ class Shooter(robot: Robot): Component(robot) {
     private fun createLUTValues(): HashMap<Double, Double> {
         val valueMap = HashMap<Double, Double>()
         //enter values here in the following format: valueMap[angle of shooter] = distance from high goal
-        valueMap[90.0] = 0.0
+        valueMap[90.0] = 8.0
+        valueMap[9.0] = 1.0
         return valueMap
     }
 

@@ -18,12 +18,11 @@ class Hopper(robot: Robot): Component(robot) {
     companion object {
 
         const val hopperDownPosition = 0.2
+        const val hopperUpPosition = 0.02
 
-        const val hopperUpPosition = 0.4
+        const val flickerOutPosition = 0.6
 
-        const val flickerOutPosition = 0.4
-
-        const val flickerInPosition = 0.7
+        const val flickerInPosition = 0.0
 
 
         //How long it takes to move from in to out
@@ -43,8 +42,6 @@ class Hopper(robot: Robot): Component(robot) {
     var hopperUp = false
 
 
-    private var isFlicking = false
-
     private val flickerTimer = ElapsedTime(ElapsedTime.Resolution.MILLISECONDS)
 
 
@@ -59,25 +56,12 @@ class Hopper(robot: Robot): Component(robot) {
             hopperServo.position = hopperDownPosition
         }
 
-
-        if(isFlicking && flickerTimer.milliseconds() >= flickingTime && flicker.position == flickerInPosition){
-            flicker.position = flickerOutPosition
-            flickerTimer.reset()
-        } else if(isFlicking && flickerTimer.milliseconds() >= flickingTime && flicker.position == flickerOutPosition){
-            isFlicking = false
-        }
-
     }
 
 
-    fun flick() {
-        //Check if we are in the middle of a flick
-        if(!isFlicking){
-            isFlicking = true
-            flicker.position = flickerInPosition //start by moving in
-            flickerTimer.reset() //Start our timer
-        }
-
+    fun flick(out: Boolean) {
+        if(out) flicker.position = flickerOutPosition
+        else flicker.position = flickerInPosition
     }
 
 
